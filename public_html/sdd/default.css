@@ -1,0 +1,55 @@
+.login-box{
+ text-align: center;
+ color: #666666;
+
+ margin: 15% auto;
+ width: 180px;
+ height: 180px;
+
+ background-color: #EEEEEE;
+
+ border-color: #222222;
+ border-style: solid;
+ border-width: thin;
+ 
+ padding-top: 5;
+ padding-right: 10;
+ padding-left: 10;
+ padding-bottom: 5;
+}
+
+.student-box{
+ text-align: left;
+ color: #666666;
+ 
+ background-color: #EEEEEE;
+
+ border-color: #222222;
+ border-style: solid;
+ border-width: thin;
+
+ padding-top: 5;
+ padding-right: 10;
+ padding-left: 10;
+ padding-bottom: 5;
+}
+
+.teacher-box{
+ text-align: left;
+ color: #666666;
+
+ background-color: #EEEEEE;
+
+ margin: 15% auto;
+ height: 420px;
+ width: 345px;
+
+ border-color: #222222;
+ border-style: solid;
+ border-width: thin;
+
+ padding-top: 5;
+ padding-right: 10;
+ padding-left: 10;
+ padding-bottom: 5;
+}
