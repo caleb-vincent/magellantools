@@ -6,7 +6,7 @@
     <BODY>
         <DIV NAME = "login-box" CLASS = "login-box">
             <H3>LOGIN</H3>
-            <FORM ACTION = "<TMPL_VAR NAME = "action">" METHOD = "POST">
+            <FORM ACTION = "<TMPL_VAR NAME = "action">" METHOD = "GEt">
                 Username:
                 <BR />
                 <INPUT TYPE = "text" NAME = "login-user" />
