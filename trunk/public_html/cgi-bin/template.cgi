@@ -8,6 +8,7 @@ use CGI::Carp (
     'warningsToBrowser',
     'fatalsToBrowser'
 );
+use Digest::SHA qw/sha256_hex/;
 require '../../MagellanTools/database.dat'; #contains database information
 
 
@@ -41,25 +42,48 @@ my $teacher_action = 'template.cgi'; # Teacher form actions
 
 my $dbh = db_connect(); #called from database.dat Don't leave here... just an example
 
-if( ( param( 'page' ) eq 'Login' ) || !param() )
+if( 1 == 1 )
 {
     if( !param() )
 	{
 		$err_msg = "";
 		show_login();
-    } else
+    }
+	elsif ( param( 'page' ) eq 'Login' )
     {
         if( validate_user( param( 'login-user'), param( 'login-password' ) ) )
         {
             $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
             print $teacher->output();
-        } else
+        } 
+		else
         {
-            $err_msg = "Invalid username and/or password"; 
+            $err_msg = $err_msg . "Invalid username and/or password"; 
             show_login();
         }
     }
-} elsif( param( 'page' ) eq 'Your Games')
+	elsif ( param( 'page' ) eq 'Register' )
+    {
+		if ( param( 'register-password') eq '' )
+		{
+			$err_msg = "Password must not be blank, Foo\'"; 
+            show_login();
+		}
+		elsif( param( 'register-password') eq param( 'confirm-password' ) )
+        {
+			my $pass_hash = sha256_hex( param( 'register-password' ) );
+			add_user( param( 'register-user' ), $pass_hash, param( 'real-name' ) );
+            $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
+            print $teacher->output();
+        } 
+		else
+        {
+            $err_msg = "Passwords do not match"; 
+            show_login();
+        }
+    }
+} 
+elsif( param( 'page' ) eq 'Your Games')
 {
     #display game page
 }
@@ -75,16 +99,24 @@ sub show_login
 # validate that they exist in our system.
 sub validate_user
 {
+	my $dbh = db_connect(); #called from database.dat
+	
     my $user = shift;
     my $password = shift;
     
-    if($user eq 'test' && $password eq 'test' ) # FOR DEMO ONLY
+	my $pass_hash = sha256_hex( $password );
+	my $statement = "SELECT * FROM mag_Login WHERE user_name = '$user'";
+	
+	my @row_ary = $dbh->selectrow_array( $statement );
+		
+	if( $pass_hash eq $row_ary[1] ) 
     {
         return 1;
     } else
     {
         return 0;
     }
+	db_disconnect( $dbh ); #close database
 }
 
 # CREATE USER ENVIRONMENT
@@ -106,12 +138,14 @@ sub add_user
         mkdir( "../sdd/$username/games/wordsearch" );
         mkdir( "../sdd/$username/games/crossword" );
         # ADD TO DATABASE
-        my $query = 'INSERT INTO mag_Login values( $username, $password, $real_name )';
-        $query = 'CREATE TABLE mag_'.$username.'( game_type char(3) character set ucs2 collate ucs2_bin NOT NULL,
+        my $query = "INSERT INTO mag_Login VALUES( '$username',  '$password', '$real_name' )";
+        $dbh->do( $query );
+		$query = 'CREATE TABLE mag_'.$username.'( game_type char(3) character set ucs2 collate ucs2_bin NOT NULL,
          lecture char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word_num int(6) NOT NULL,
-         `key` INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY ) ';
+         `key` INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY )  ENGINE=MyISAM DEFAULT CHARSET=ucs2 collate ucs2_bin
+';
         $dbh->do( $query ); 
     }
     db_disconnect( $dbh ); #close database
