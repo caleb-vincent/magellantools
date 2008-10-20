@@ -16,11 +16,11 @@
 	          <BR />
             <TEXTAREA COLS = "40" ROWS = "10" NAME = "teacher-list"></TEXTAREA>
             <BR />
-            <INPUT TYPE = "submit" NAME = "teacher-submit" VALUE = "Submit" /> <INPUT TYPE = "reset" NAME = "teacher-reset" />
+            <INPUT TYPE = "submit" NAME = "page" VALUE = "Add Words" /> <INPUT TYPE = "reset" NAME = "teacher-reset" />
         </FORM>
         <BR />
         <FORM ACTION = "<TMPL_VAR NAME = "action">" METHOD = "get">
-            <INPUT TYPE = "button" NAME = "teacher-viewgames" VALUE = "Your Games" />
+            <INPUT TYPE = "submit" NAME = "page" VALUE = "Your Games" />
         </FORM>
     </DIV>
  </BODY>

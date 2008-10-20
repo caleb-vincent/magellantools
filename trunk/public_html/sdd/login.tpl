@@ -15,8 +15,11 @@
                 <BR />
                 <INPUT TYPE = "password" NAME = "login-password" />
                 <BR />
-                <INPUT TYPE = "submit" NAME = "Login" VALUE = "login" />
+                <INPUT TYPE = "submit" NAME = "page" VALUE = "Login" />
             </FORM>
+            <FONT COLOR = "#ff0000">
+                <TMPL_VAR NAME = "errmsg">
+            </FONT>
         </DIV>
     </BODY>
 </HTML>

@@ -1,0 +1,18 @@
+require DBI;
+use strict;
+use warnings;
+
+#DATABASE VARIABLES
+my $db = 'mardis_sdd';
+my $db_user = 'mardis_sddApp';
+my $db_pass = 'Z||H!3h+qwHZ';
+
+#COMMON DATABASE FUNCTIONS
+sub db_connect
+{
+    return DBI->connect("DBI:mysql:database=$db;host=localhost", $db_user, $db_pass, {'RaiseError' => 1});
+}
+sub db_disconnect
+{
+    $_[0]->disconnect();
+}
