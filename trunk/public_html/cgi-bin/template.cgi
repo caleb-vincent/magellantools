@@ -27,7 +27,7 @@ warningsToBrowser(1);
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
 my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
 
-# PARAMETER VARIABLES
+# PARAMETER VARIABLES 
 my $login_title = 'BuzzwordBingo!'; # Login page title
 my $login_style = '../sdd/default.css'; # Login css file
 my $login_action = 'template.cgi'; # Login form action
@@ -44,9 +44,9 @@ my $dbh = db_connect(); #called from database.dat Don't leave here... just an ex
 if( ( param( 'page' ) eq 'Login' ) || !param() )
 {
     if( !param() )
-    {
-        $err_msg = "";
-        show_login();
+	{
+		$err_msg = "";
+		show_login();
     } else
     {
         if( validate_user( param( 'login-user'), param( 'login-password' ) ) )
@@ -55,7 +55,7 @@ if( ( param( 'page' ) eq 'Login' ) || !param() )
             print $teacher->output();
         } else
         {
-            $err_msg = "Invalid username and/or password";
+            $err_msg = "Invalid username and/or password"; 
             show_login();
         }
     }
@@ -71,13 +71,13 @@ sub show_login
     print $login->output();
 }
 # USER VALIDATION SUBROUTINE
-# Pass a username and a password to this function to
+# Pass a username and a password to this function to 
 # validate that they exist in our system.
 sub validate_user
 {
     my $user = shift;
     my $password = shift;
-
+    
     if($user eq 'test' && $password eq 'test' ) # FOR DEMO ONLY
     {
         return 1;
@@ -96,7 +96,7 @@ sub add_user
     my $username = shift;
     my $password = shift;
     my $real_name = shift;
-
+    
     if( $username ne "" && $password ne "" ) #just to avoid warnings, does not actually check
     {
         #create directory and skeleton files
@@ -106,13 +106,13 @@ sub add_user
         mkdir( "../sdd/$username/games/wordsearch" );
         mkdir( "../sdd/$username/games/crossword" );
         # ADD TO DATABASE
-        my $query = 'INSERT INTO mag_Login values( $username, $password, $real_name )
-        $query = 'CREATE TABLE mag_'.$username.'( game_type char( 3 ) character set ucs2 collate ucs2_bin NOT NULL ,
+        my $query = 'INSERT INTO mag_Login values( $username, $password, $real_name )';
+        $query = 'CREATE TABLE mag_'.$username.'( game_type char(3) character set ucs2 collate ucs2_bin NOT NULL,
          lecture char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
-         word_num int( 6 ) character set ucs2 collate ucs2_bin NOT NULL,
-         `key` INT( 6 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ) ';
-        $dbh->do( $query );
+         word_num int(6) NOT NULL,
+         `key` INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY ) ';
+        $dbh->do( $query ); 
     }
     db_disconnect( $dbh ); #close database
 }
