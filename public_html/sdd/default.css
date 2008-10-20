@@ -1,12 +1,24 @@
+.container-box{
+  text-align: center;
+  
+  margin: 15% auto;  
+  width: 420px;
+  height: 324px;
+  
+  position: relative;
+}
+
 .login-box{
-    text-align: center;
     color: #666666;
 
-    margin: 15% auto;
-    width: 180px;
-    height: 220px;
+	position: absolute;
+	left: 0;
+	top: 0;
 
-    background-color: #EEEEEE;
+	width: 180px;
+    height: 260px;
+
+    background-color: #EEEEFF;
 
     border-color: #222222;
     border-style: solid;
@@ -16,6 +28,41 @@
     padding-right: 10;
     padding-left: 10;
     padding-bottom: 5;
+}
+
+.register-box{
+    color: #666666;
+
+	position: absolute;
+	right: 0;
+	top: 0;
+	
+	width: 180px;
+    height: 260px;
+
+    background-color: #EEEEFF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+ 
+    padding-top: 5;
+    padding-right: 10;
+    padding-left: 10;
+    padding-bottom: 5;
+}
+
+.error-box{
+    position: absolute;
+	bottom: 0;
+
+	width: 420px;
+    height: 44px;
+
+    padding-top: 2;
+    padding-right: 2;
+    padding-left: 2;
+    padding-bottom: 2;
 }
 
 .student-box{
