@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!--This script contains a function to determine the height of the browser space, minus the header and footer. 
+Unfortunately, setting the height to 100% is not reliable across all browsers.-->
+<script type="text/javascript">
+	function setIframeHeight(iframeName) {
+	  //var iframeWin = window.frames[iframeName];
+	  var iframeEl = document.getElementById? document.getElementById(iframeName): document.all? document.all[iframeName]: null;
+	  var getElement = document.getElementById ? function(x) { return document.getElementById(x); } : document.all ? function(x) { return document.all[x]; } : null;
+	  if (getElement != null) {
+	  // need to add to height to be sure it will all show
+	  var docHeight = window.innerHeight;
+	  var mastheadHeight = getElement('masthead').scrollHeight;
+	  var footerHeight = getElement('footer').scrollHeight;
+	  var newHeight = docHeight - mastheadHeight - footerHeight;
+	  iframeEl.style.height = newHeight + "px";
+	  }
+	}
+
+	function alertSize() {
+	  var myHeight = 0;
+	  if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myHeight = window.innerHeight;
+	  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+	    //IE 6+ in 'standards compliant mode'
+	    myHeight = document.documentElement.clientHeight;
+	  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+	    //IE 4 compatible
+	    myHeight = document.body.clientHeight;
+	  }
+	  //window.alert( 'Height = ' + myHeight );
+	  return myHeight;
+	}
+</script>
+    <link rel="stylesheet" type="text/css" href="default.css" />
+    <title>Magellan Tools - Your Online Educational Tools Resource</title>
+</head>
+
+<body onload="setIframeHeight('ifrm');" onresize="setIframeHeight('ifrm');">
+
+<!--Heading: site logo and title/subtitle-->
+<div class="top" id="masthead">
+    <div class ="top" id="header">
+        <img src="images/etoolslogo.png"></img>
+        Magellan Tools
+    </div>
+</div>
+
+<!--Sidebar: text, team logo and navigation buttons-->
+<div id="ifrm" width="100%" height="100%" >
+    <div class ="left" id="sidebar">
+        <div>
+            <br />
+            <img src="images/normalButton.png" width=200px/>
+            <br />
+        </div>
+        <div>
+            <br />
+            <img src="images/normalButton.png" width=200px/>
+            <br />
+        </div>
+        <div>
+            <br />
+            <img src="images/normalButton.png" width=200px/>
+            <br />
+        </div>
+        <div>
+            <br />
+            <img src="images/normalButton.png" width=200px/>
+            <br />
+        </div>
+        <br /> <br /> <br />
+        <img src="images/mtoolslogo.png" />
+    </div>
+
+    <!--This iframe contains the contents of the loaded page-->
+    <iframe id="iframe" height="100%" src="bingoPage.htm" style="border:none"></iframe>
+
+</div>
+
+<div id ="footer">
+</div>
+
+</body>
+</html>
