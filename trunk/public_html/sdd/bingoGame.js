@@ -1,10 +1,13 @@
-﻿var numrows = 5
+﻿// This is the javascript file that contains the playable bingo game. 
+
+var numrows = 5
 var numcols = 5
 var boxheight = 50
 var boxwidth = 50
 var bingo = "BINGO"
 var tblBody
 
+// Main function: creates and initializes grid
 function start() 
 {
     var body = document.getElementsByTagName("body")[0];
@@ -37,6 +40,7 @@ function start()
             
             var cellText;
             if(i==0)
+                // Bingo header
                 cellText = document.createTextNode(bingo[j])
             else
                 cellText = document.createTextNode(GetCellText(cell));
@@ -56,14 +60,18 @@ function GetCellText(cell)
     return cell.getAttribute("name");
 }
 
+// Callback for cell mouse click
 function MClick(cell, tblBody)
 {
     cell.setAttribute("bgcolor", "red");
     cell.removeAttribute("onmouseover");
     cell.removeAttribute("onmouseout");
+    
+    // After each click, check to see if the player has won
     CheckForWinCondition(tblBody);
 }
 
+// Checks clicked boxes to see if win condition is fulfilled. Default is full board.
 function CheckForWinCondition(tblBody)
 {
     var win = true;
@@ -82,7 +90,6 @@ function CheckForWinCondition(tblBody)
     if(win)
     {
         alert("You have won Full Bingo!");
-        start();
     }
     win = true;
 }
