@@ -42,47 +42,51 @@ my $teacher_action = 'template.cgi'; # Teacher form actions
 
 my $dbh = db_connect(); #called from database.dat Don't leave here... just an example
 
-if( 1 == 1 )
+if( !param() )
 {
-    if( !param() )
+	$err_msg = "";
+	show_login();
+}
+elsif ( param( 'page' ) eq 'Login' )
+{
+	if( validate_user( param( 'login-user'), param( 'login-password' ) ) )
 	{
-		$err_msg = "";
+		$teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
+		print $teacher->output();
+	} 
+	else
+	{
+		$err_msg = "Invalid username and/or password"; 
 		show_login();
-    }
-	elsif ( param( 'page' ) eq 'Login' )
-    {
-        if( validate_user( param( 'login-user'), param( 'login-password' ) ) )
-        {
-            $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
-            print $teacher->output();
-        } 
-		else
-        {
-            $err_msg = $err_msg . "Invalid username and/or password"; 
-            show_login();
-        }
-    }
-	elsif ( param( 'page' ) eq 'Register' )
-    {
-		if ( param( 'register-password') eq '' )
+	}
+}
+elsif ( param( 'page' ) eq 'Register' )
+{
+	if ( param( 'register-password') eq '' )
+	{
+		$err_msg = "Password must not be blank, Foo\'"; 
+		show_login();
+	}
+	elsif( param( 'register-password') eq param( 'confirm-password' ) )
+	{
+		my $pass_hash = sha256_hex( param( 'register-password' ) );
+		if( add_user( param( 'register-user' ), $pass_hash, param( 'real-name' ) ) )
 		{
-			$err_msg = "Password must not be blank, Foo\'"; 
+			$teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
+            print $teacher->output();
+		}
+		else
+		{
+            $err_msg = "User already exists, Foo\'"; 
             show_login();
 		}
-		elsif( param( 'register-password') eq param( 'confirm-password' ) )
-        {
-			my $pass_hash = sha256_hex( param( 'register-password' ) );
-			add_user( param( 'register-user' ), $pass_hash, param( 'real-name' ) );
-            $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action );
-            print $teacher->output();
-        } 
-		else
-        {
-            $err_msg = "Passwords do not match"; 
-            show_login();
-        }
-    }
-} 
+	} 
+	else
+	{
+		$err_msg = "Passwords do not match"; 
+		show_login();
+	}
+}
 elsif( param( 'page' ) eq 'Your Games')
 {
     #display game page
@@ -101,22 +105,30 @@ sub validate_user
 {
 	my $dbh = db_connect(); #called from database.dat
 	
+	# retrieve function arguments
     my $user = shift;
     my $password = shift;
     
+	# get hash of password
 	my $pass_hash = sha256_hex( $password );
+	
+	# prepare a statement to get database row that matches username 
 	my $statement = "SELECT * FROM mag_Login WHERE user_name = '$user'";
 	
+	# store the database row in an array
 	my @row_ary = $dbh->selectrow_array( $statement );
-		
+	
+	db_disconnect( $dbh ); # close database
+	
+	# if hash of entered password is the same as stored password
 	if( $pass_hash eq $row_ary[1] ) 
     {
         return 1;
-    } else
+    } 
+	else
     {
         return 0;
     }
-	db_disconnect( $dbh ); #close database
 }
 
 # CREATE USER ENVIRONMENT
@@ -125,10 +137,26 @@ sub validate_user
 sub add_user
 {
     my $dbh = db_connect(); #called from database.dat
+	# retirieve function arguments
     my $username = shift;
     my $password = shift;
     my $real_name = shift;
+	
+	# prepare a statement to get database row that matches username 
+	my $statement = "SELECT * FROM mag_Login WHERE user_name = '$username'";
+	
+    # store the database row in an array
+	my @row_ary = $dbh->selectrow_array( $statement );
     
+	# if we got this user
+	if( $row_ary[0] ne "" )
+	{
+		#! Early Return
+		return 0;
+	}
+    
+	# TODO: add check for SQL injection in username
+	# TODO: add check for invalid characters ( covers previous  TODO )
     if( $username ne "" && $password ne "" ) #just to avoid warnings, does not actually check
     {
         #create directory and skeleton files
@@ -149,4 +177,6 @@ sub add_user
         $dbh->do( $query ); 
     }
     db_disconnect( $dbh ); #close database
+	
+	return 1;
 }
