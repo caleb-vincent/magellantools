@@ -136,7 +136,8 @@ elsif( param( 'page' ) eq 'Your Games' )
 elsif( param( 'page' ) eq 'Teacher Page' )
 {
     # display teacher page
-    get_session( $session )
+    print header();
+    get_session( $session );
     show_teacher( );
 }
 
