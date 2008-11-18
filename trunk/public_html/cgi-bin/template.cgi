@@ -37,7 +37,9 @@ require '../../MagellanTools/database.dat';                 # contains database 
 
 warningsToBrowser( 1 );
 
+# GLOBALS
 my $session;                                                # Global session variable
+my $upload_base = '../sdd/';                                 # This needs to point to where the user folders are created
 
 # TEMPLATE DECLARATION
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
@@ -131,6 +133,9 @@ elsif ( param( 'page' ) eq 'Register' )
 elsif( param( 'page' ) eq 'Your Games' )
 {
     # display game page
+    print header( );
+    # Get the session
+    get_session( $session );
     show_gamelist();
 }
 elsif( param( 'page' ) eq 'Teacher Page' )
@@ -139,6 +144,23 @@ elsif( param( 'page' ) eq 'Teacher Page' )
     print header();
     get_session( $session );
     show_teacher( );
+}
+elsif( param( 'Page' ) eq 'Add Words')
+{
+    # user is trying to add new words
+    if( !param( 'teacher-upload' )  && param( 'teacher-list' ) )
+    {
+        # there is no file being uploaded
+        
+    }
+    elsif( param( 'teacher-upload' ) )
+    {
+        # there is a file to read
+    }
+    else
+    {
+        # form is blank
+    }
 }
 
 #########################################
@@ -153,9 +175,6 @@ elsif( param( 'page' ) eq 'Teacher Page' )
 # Displays the game list
 sub show_gamelist
 {
-    # Get the session
-    get_session( $session );
-    print header( );
     # Connect to database
     my $dbh = db_connect( );
     # Get the tables for the current teacher
