@@ -45,6 +45,7 @@ my $upload_base = '../sdd/';                                 # This needs to poi
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
 my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
 my $gamelist = HTML::Template->new( filename=>'../sdd/your_games.tpl' );
+my $searchresults = HTML::Template->new( filename=>'../sdd/teachers_games.tpl' );
 
 # PARAMETER VARIABLES
 my $err_msg = "";
@@ -69,7 +70,7 @@ my $gamelist_action = 'template.cgi';                       # Game list form act
 ##############################################
 
 
-if( !param( ) )
+if( !param( ) || param( 'page' ) eq 'Home' )
 {
     # user has just reached our page
     # show them the login/register modules
@@ -138,6 +139,12 @@ elsif( param( 'page' ) eq 'Your Games' )
     get_session( $session );
     show_gamelist();
 }
+elsif( param( 'page' ) eq 'Find Teacher' )
+{
+    # display game page
+    print header( );
+    show_search_results( param( 'teacher-name' ) );
+}
 elsif( param( 'page' ) eq 'Teacher Page' )
 {
     # display teacher page
@@ -195,6 +202,32 @@ sub show_gamelist
     # Load up template
     $gamelist->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $session->param( 'username') ), games=>$curgames );
     print $gamelist->output( );
+}
+
+# SHOW SEARCH RESULTS
+# Accepts no input
+# Displays the game list
+sub show_search_results()
+{
+    my $search_term = shift;
+    my $dbh = db_connect( );
+    # Get the tables for the current teacher
+    my $query = "select lecture, game_type from mag_$search_term";
+    my $result = $dbh->prepare( $query );
+    $result->execute( );
+    # Put games into array reference
+    my $curgames = $result->fetchall_arrayref
+    (
+        {
+         lecture   => 1,
+         game_type   => 1,
+        }
+    );
+    # Close DB connection
+    db_disconnect( $dbh );
+    # Load up template
+    $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>$curgames );
+    print $searchresults->output( );
 }
 
 # SHOW TEACHER PAGE
