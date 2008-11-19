@@ -82,7 +82,7 @@
     width: 20%;
     height: 87%;
 
-    background-color: #EEEEFF;
+    background-color: #F6F6FF;
 
     border-color: #222222;
     border-style: solid;
@@ -102,7 +102,7 @@
     width: 77%;
     height: 10%;
 
-    background-color: #EEEEFF;
+    background-color: #F6F6FF;
 
     border-color: #222222;
     border-style: solid;
@@ -122,7 +122,7 @@
     width: 20%;
     height: 10%;
 
-    background-color: #EEEEFF;
+    background-color: #F6F6FF;
 
     border-color: #222222;
     border-style: solid;
@@ -141,7 +141,7 @@
     width: 77%;
     height: 87%;
 
-    background-color: #EEEEFF;
+    background-color: #F6F6FF;
 
     border-color: #222222;
     border-style: solid;
@@ -196,4 +196,11 @@
     width:auto;
     
     height:100%;
+}
+
+.home-button
+ {
+    width:50%;
+    
+    height:5%;
 }
