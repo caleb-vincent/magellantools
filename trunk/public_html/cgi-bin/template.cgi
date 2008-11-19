@@ -18,7 +18,7 @@ use CGI::Carp (
 use CGI;
 use Digest::SHA qw/sha256_hex/;
 use CGI::Session;
-require '../../MagellanTools/database.dat';                 # contains database information
+require '../../MagellanTools/database.dat';     # contains database information
 
 
 ########## NOTES ###########################
@@ -46,6 +46,7 @@ my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
 my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
 my $gamelist = HTML::Template->new( filename=>'../sdd/your_games.tpl' );
 my $searchresults = HTML::Template->new( filename=>'../sdd/teachers_games.tpl' );
+my $wordsearch = HTML::Template->new( filename=>'../sdd/wordsearch.tpl' );
 
 # PARAMETER VARIABLES
 my $err_msg = "";
@@ -169,6 +170,11 @@ elsif( param( 'Page' ) eq 'Add Words')
         # form is blank
     }
 }
+elsif( param( 'page' ) eq 'wordsearch' )
+{
+    print header();
+    show_wordsearch( );
+}
 
 #########################################
 #                                       #
@@ -249,6 +255,15 @@ sub show_login
     $login->param( title=>$login_title, style=>$login_style, action=>$login_action, errmsg=>$err_msg );
     print $login->output( );
 }
+
+# SHOW WORDSEARCH PAGE
+# Displays the word search
+sub show_wordsearch
+{
+    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', array=>'DUMMY' );
+    print $wordsearch->output( );
+}
+
 # USER VALIDATION SUBROUTINE
 # Pass a username and a password to this function to
 # validate that they exist in our system.
