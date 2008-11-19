@@ -69,21 +69,82 @@
     padding-bottom: 2;
 }
 
-.student-box
+.side-bar
 {
-    text-align: left;
     color: #666666;
- 
-    background-color: #EEEEEE;
+
+    position: absolute;
+    left: 1%;
+    bottom: 1%;
+    
+    width: 20%;
+    height: 87%;
+
+    background-color: #EEEEFF;
 
     border-color: #222222;
     border-style: solid;
     border-width: thin;
 
-    padding-top: 5;
-    padding-right: 10;
-    padding-left: 10;
-    padding-bottom: 5;
+}
+
+.top-bar 
+{
+    text-align: center;
+    color: #666666;
+   
+    position: absolute;
+    left: 22%;
+    top: 1%;
+    
+    width: 77%;
+    height: 10%;
+
+    background-color: #EEEEFF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+   
+}
+
+.top-corner
+{
+    text-align: center;
+    color: #666666;
+   
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    
+    width: 20%;
+    height: 10%;
+
+    background-color: #EEEEFF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+}
+
+.main-page 
+{
+   text-align: center;
+   color: #666666;
+   
+   position: absolute;
+    right: 1%;
+    bottom: 1%;
+   
+    width: 77%;
+    height: 87%;
+
+    background-color: #EEEEFF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+
 }
 
 .teacher-box
@@ -126,4 +187,11 @@
     padding-right: 10;
     padding-left: 10;
     padding-bottom: 5;
+}
+
+.logo
+ {
+    width:auto;
+    
+    height:100%;
 }
