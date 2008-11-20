@@ -228,6 +228,10 @@ sub parse_words
     my $count = $ret->rows;
     for(my $i = 0; $i <= scalar( @lines ); $i++ )
     {
+        $lines =~ s#'#\'#g
+        $lines =~ s#select##gi
+        $lines =~ s#drop##gi
+        
         if($lines[$i] ne "")
         {
             $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','' )";
