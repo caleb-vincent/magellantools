@@ -45,8 +45,8 @@ my $upload_base = '../sdd/';                                 # This needs to poi
 # TEMPLATE DECLARATION
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
 my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
-my $gamelist = HTML::Template->new( filename=>'../sdd/your_games.tpl' );
-my $searchresults = HTML::Template->new( filename=>'../sdd/teacher_games.tpl' );
+my $gamelist = HTML::Template->new( filename=>'../sdd/teacher_games.tpl' );
+my $searchresults = HTML::Template->new( filename=>'../sdd/student_games.tpl' );
 my $wordsearch = HTML::Template->new( filename=>'../sdd/wordsearch.tpl' );
 
 # PARAMETER VARIABLES
@@ -184,7 +184,7 @@ elsif( param( 'Page' ) eq 'Add Words')
 }
 elsif( param( 'page' ) eq 'wordsearch' )
 {
-    print header();
+    print header( );
     show_wordsearch( );
 }
 
@@ -202,19 +202,19 @@ elsif( param( 'page' ) eq 'wordsearch' )
 sub parse_words
 {
     # parse words
-    my @lines = @{ shift };
-    my $lecture = shift;
-    my $user = shift;
-    my $gametype = shift;
+    my @lines = @{$_[0]};
+    my $lecture = $_[1];
+    my $user = $_[2];
+    my $gametype = $_[3];
 
     # add to database
     my $query = "SELECT MAX('word_num') FROM mag_".$user;
     my $dbh = db_connect( );
-    my $ret = $dhb->do( $query );
+    my $ret = $dbh->do( $query );
     my $count = $ret;
-    for(my $i = 0; i  < $#lines; $i++ )
+    for(my $i = 0; $i <= scalar( @lines ); $i++ )
     {
-        query = "INSERT INTO mag_".$user." VALUES( $gametype,$lecture,$lines[i], $count )";
+        $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."' )";
         $dbh->do( $query );
         $count++;
     }
