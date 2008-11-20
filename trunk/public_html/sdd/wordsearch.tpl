@@ -48,14 +48,14 @@
                 {
                     var cell = document.createElement( "td" );
                     cell.setAttribute( "HEIGHT", boxheight );
-                    cell.setAttribute( "NAME", word_array[ i * numrows + j ] );
+                    cell.setAttribute( "NAME", word_array[ i * ( numrows ) + j ] );
                     cell.setAttribute("onmouseover", "this.bgColor='#DDDDFF'");
                     cell.setAttribute("onmouseout", "this.bgColor='#EEEEFF'");
                     cell.setAttribute("onclick", "MClick(this, tblBody);");
                     
                     var cellText;
                     
-                    cellText = document.createTextNode( char_array[ i * numrows + j ] );
+                    cellText = document.createTextNode( char_array[ i * ( numrows ) + j ] );
                     
                     cell.appendChild(cellText)
                     row.appendChild(cell);
@@ -96,7 +96,8 @@
                 selected_cells.push( cell );
                 for( var i = 0; i < selected_cells.length; i++ )
                 {
-                    selected_cells[i].setAttribute("bgcolor", "33DDDD");
+                    var color = 15597568 + ( selected_word * 40 );
+                    selected_cells[i].setAttribute("bgcolor", color );
                     selected_cells[i].removeAttribute("onmouseout");
                     selected_cells[i].removeAttribute("onmouseover");
                 }
