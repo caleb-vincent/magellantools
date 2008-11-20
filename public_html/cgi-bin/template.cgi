@@ -18,7 +18,8 @@ use CGI;
 use Digest::SHA qw/sha256_hex/;
 use CGI::Session;
 use File::Basename;
-require '../../MagellanTools/database.dat';                 # contains database information
+require '../../MagellanTools/database.dat';     # contains database information
+require './wordsearch.pm';                      #contains the wordsearch class
 
 
 ########## NOTES ###########################
@@ -196,6 +197,7 @@ elsif( param( 'page' ) eq 'Add Words')
 }
 elsif( param( 'page' ) eq 'wordsearch' )
 {
+    print header( );
     show_wordsearch( );
 }
 
@@ -338,7 +340,14 @@ sub show_login
 # Displays the word search
 sub show_wordsearch
 {
-    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', char_array=>join('", "', ( 1 .. 25 ) x 25 ), word_array=>join('", "', ( 0 .. 24 ) x 25 ), length_array=>join( '", "', (2) x 25 ) );
+    # TODO: replace with database querey
+    my @dumb_words = ( "this is !hello21 ", "word", "slime", "ball", "thing", "stuff", "why", "bloody", "not" );
+    my $wordsearch_object = Wordsearch->new();
+    $wordsearch_object->create_wordsearch( @dumb_words );
+    my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
+    my $flattened_words = join( '","', @{ $wordsearch_object->get_word_array() } );
+    my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
+    $wordsearch->param( teacher=>'Dummy', lecture=>'DUMMY', char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style );
     print $wordsearch->output( );
 }
 
