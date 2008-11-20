@@ -159,21 +159,28 @@ elsif( param( 'page' ) eq 'Teacher Page' )
     $err_msg = "";
     show_teacher( );
 }
-elsif( param( 'Page' ) eq 'Add Words')
+elsif( param( 'page' ) eq 'Add Words')
 {
     # user is trying to add new words
+    print header( );
     get_session( $session );
     if( !param( 'teacher-upload' )  && param( 'teacher-list' ) )
     {
         # there is no file being uploaded
-
+        my @temp = split( '\r\n',param( 'teacher-list' ) );
+        if(!defined(@temp))
+        {
+            @temp = split( '\n',param( 'teacher-list' ) );
+        }
+        chomp(@temp);
+        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' )  );
+        show_teacher( );
     }
     elsif( param( 'teacher-upload' ) )
     {
         # there is a file to read
-        get_session( $session );
-        parse_words( read_file( param( 'file' ) ), param('username') );
-        show_teacher();
+        parse_words( read_file( param( 'file' ) ), param( 'lecture-name' ), $session->param('username'), param( 'game-type' ) );
+        show_teacher( );
     }
     else
     {
@@ -208,16 +215,21 @@ sub parse_words
     my $gametype = $_[3];
 
     # add to database
-    my $query = "SELECT MAX('word_num') FROM mag_".$user;
+    my $query = "SELECT * FROM mag_".$user." WHERE lecture = '".$lecture."'";
     my $dbh = db_connect( );
-    my $ret = $dbh->do( $query );
-    my $count = $ret;
+    my $ret = $dbh->prepare( $query );
+    $ret->execute( );
+    my $count = $ret->rows;
     for(my $i = 0; $i <= scalar( @lines ); $i++ )
     {
-        $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."' )";
-        $dbh->do( $query );
-        $count++;
+        if($lines[$i] ne "")
+        {
+            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','' )";
+            $dbh->do( $query );
+            $count++;
+        }
     }
+    $err_msg = "Added $#lines words to lecture: $lecture, Foo\'";
 }
 
 # READ FILE
@@ -225,21 +237,21 @@ sub parse_words
 # Returns file contents as array of lines
 sub read_file
 {
-    my $filename = shift;
-    my $safe_filename_characters = "a-zA-Z0-9_.-";
-    my ( $name, $path, $extension ) = fileparse ( $filename, '\..*' );
-    $filename = $name . $extension;
-    $filename =~ tr/ /_/;
-    $filename =~ s/[^$safe_filename_characters]//g;
-    if ( $filename =~ /^([$safe_filename_characters]+)$/ )
-    {
-        $filename = $1;
-    }
-    else
-    {
-        #filename is unsafe
-    }
-    my $upload_filehandle = upload("photo");
+    #my $filename = shift;
+    #my $safe_filename_characters = "a-zA-Z0-9_.-";
+    #my ( $name, $path, $extension ) = fileparse ( $filename, '\..*' );
+    #$filename = $name . $extension;
+    #$filename =~ tr/ /_/;
+    #$filename =~ s/[^$safe_filename_characters]//g;
+    #if ( $filename =~ /^([$safe_filename_characters]+)$/ )
+    #{
+    #    $filename = $1;
+    #}
+    #else
+    #{
+    #    #filename is unsafe
+    #}
+    my $upload_filehandle = upload('file');
     my @all_lines = <$upload_filehandle>;
     return \@all_lines;
 }
@@ -321,7 +333,7 @@ sub show_login
 # Displays the word search
 sub show_wordsearch
 {
-    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', char_array=>join('", "', ( 1 .. 625 ) ), word_array=>join('", "', ( 1 .. 625 ) ) );
+    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', array=>'DUMMY' );
     print $wordsearch->output( );
 }
 
