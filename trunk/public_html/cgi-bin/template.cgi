@@ -23,7 +23,7 @@ require './wordsearch.pm';                      #contains the wordsearch class
 
 
 ########## NOTES ###########################
-# 10/09/08 [SPM] - Change GET to POST in the template files( login.tpl and teacher.tpl )
+# 10/09/08 [SPM] - Change GET to POST in the template files
 #                  when done testing
 #
 #
@@ -162,8 +162,8 @@ elsif( param( 'page' ) eq 'Teacher Page' )
 elsif( param( 'page' ) eq 'Add Words')
 {
     # user is trying to add new words
+    
     print header( );
-    get_session( $session );
     if( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
     {
         # there is no file being uploaded
@@ -173,7 +173,8 @@ elsif( param( 'page' ) eq 'Add Words')
             @temp = split( '\n',param( 'teacher-list' ) );
         }
         chomp(@temp);
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' )  );
+        get_session( $session );
+        parse_words( \@temp, param( 'lecture-name' ), ($session->param('username') ), param( 'game-type' )  );
         show_teacher( );
     }
     elsif( param( 'teacherupload' ) && !param('teacher-list') && param( 'game-type' ) )
@@ -222,6 +223,7 @@ sub close_session
    get_session( $_[0] );
    $_[0]->clear();
    $_[0]->delete();
+   $_[0]->flush();
 }
 
 # PARSE WORDS
@@ -234,7 +236,6 @@ sub parse_words
     my $lecture = $_[1];
     my $user = $_[2];
     my $gametype = $_[3];
-
     # add to database
     my $query = "SELECT * FROM mag_".$user." WHERE lecture = '".$lecture."'";
     my $dbh = db_connect( );
@@ -254,7 +255,7 @@ sub parse_words
             $count++;
         }
     }
-    $err_msg = "Added $#lines words to lecture: $lecture, Foo\'";
+    $err_msg = "Added ".$#lines+1/" words to lecture: $lecture, Foo\'";
     db_disconnect( $dbh );
 }
 
@@ -409,12 +410,6 @@ sub add_user
     # TODO: add check for invalid characters ( covers previous  TODO )
     if( $username ne "" && $password ne "" ) #just to avoid warnings, does not actually check
     {
-        #create directory and skeleton files
-        mkdir( "../sdd/$username" );
-        mkdir( "../sdd/$username/games" );
-        mkdir( "../sdd/$username/games/bingo" );
-        mkdir( "../sdd/$username/games/wordsearch" );
-        mkdir( "../sdd/$username/games/crossword" );
         # ADD TO DATABASE
         my $query = "INSERT INTO mag_Login VALUES( '$username',  '$password', '$real_name' )";
         $dbh->do( $query );
@@ -439,7 +434,7 @@ sub make_session
     $_[0] = new CGI::Session( undef,undef,{ 'Directory'=>"/tmp" } );
     $_[0]->param( 'username',$_[1] );
     $_[0]->expire( '+8h' );
-    my $cookie = CGI::cookie( $_[0]->id() => $session->id );
+    my $cookie = CGI::cookie( CGISESSID => $session->id );
     print header( -cookie=>$cookie );
 }
 
