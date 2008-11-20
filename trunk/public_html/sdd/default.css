@@ -17,6 +17,7 @@
     left: 0;
     top: 0;
 
+    margin: 10% auto;
     width: 180px;
     height: 260px;
 
@@ -40,6 +41,7 @@
     right: 0;
     top: 0;
 	
+    margin: 10% auto;
     width: 180px;
     height: 260px;
 
@@ -96,7 +98,7 @@
     color: #666666;
    
     position: absolute;
-    left: 22%;
+    right: 1%;
     top: 1%;
     
     width: 77%;
@@ -154,9 +156,10 @@
     text-align: left;
     color: #666666;
 
-    background-color: #EEEEEE;
+    background-color: #EEEEFF;
 
-    margin: 15% auto;
+    
+    margin: 10% auto;
     height: 500px;
     width: 345px;
 
@@ -175,9 +178,9 @@
     text-align: left;
     color: #666666;
 
-    background-color: #EEEEEE;
+    background-color: #EEEEFF;
 
-    margin: 15% auto;
+    margin: 10% auto;
     height: 420px;
     width: 345px;
 
