@@ -16,7 +16,7 @@
         var wincondition = "row"
         var tblBody
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
-        var words = new Array("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+        var words = [ "<TMPL_VAR NAME = "word_array">" ];
 
         // Main function: creates and initializes grid
         function start() 
