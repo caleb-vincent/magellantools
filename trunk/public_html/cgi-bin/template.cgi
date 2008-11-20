@@ -333,7 +333,7 @@ sub show_login
 # Displays the word search
 sub show_wordsearch
 {
-    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', array=>'DUMMY' );
+    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', char_array=>join('", "', ( 1 .. 25 ) x 25 ), word_array=>join('", "', ( 0 .. 24 ) x 25 ), length_array=>join( '", "', (2) x 25 ) );
     print $wordsearch->output( );
 }
 
