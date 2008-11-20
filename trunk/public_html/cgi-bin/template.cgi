@@ -176,7 +176,7 @@ elsif( param( 'page' ) eq 'Add Words')
         parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' )  );
         show_teacher( );
     }
-    elsif( param( 'teacherupload' ) )
+    elsif( param( 'teacherupload' ) && !param('teacher-list') )
     {
         # there is a file to read
         my $teacherupload = param('teacherupload');
