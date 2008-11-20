@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
 
-
 ##########################################
 #                                        #
 #               INCLUDES                 #
@@ -164,7 +163,7 @@ elsif( param( 'page' ) eq 'Add Words')
     # user is trying to add new words
     print header( );
     get_session( $session );
-    if( !param( 'teacher-upload' )  && param( 'teacher-list' ) )
+    if( !param( 'teacherupload' )  && param( 'teacher-list' ) )
     {
         # there is no file being uploaded
         my @temp = split( '\r\n',param( 'teacher-list' ) );
@@ -176,10 +175,16 @@ elsif( param( 'page' ) eq 'Add Words')
         parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' )  );
         show_teacher( );
     }
-    elsif( param( 'teacher-upload' ) )
+    elsif( param( 'teacherupload' ) )
     {
         # there is a file to read
-        parse_words( read_file( param( 'file' ) ), param( 'lecture-name' ), $session->param('username'), param( 'game-type' ) );
+        my $teacherupload = param('teacherupload');
+        chomp( my @temp = <$teacherupload> );
+        foreach( @temp )
+        {
+            $_ =~ s/^(.*)\r$/$1$2/g
+        }
+        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ) );
         show_teacher( );
     }
     else
@@ -191,7 +196,6 @@ elsif( param( 'page' ) eq 'Add Words')
 }
 elsif( param( 'page' ) eq 'wordsearch' )
 {
-    print header( );
     show_wordsearch( );
 }
 
@@ -230,6 +234,7 @@ sub parse_words
         }
     }
     $err_msg = "Added $#lines words to lecture: $lecture, Foo\'";
+    db_disconnect( $dbh );
 }
 
 # READ FILE
@@ -237,22 +242,13 @@ sub parse_words
 # Returns file contents as array of lines
 sub read_file
 {
-    #my $filename = shift;
-    #my $safe_filename_characters = "a-zA-Z0-9_.-";
-    #my ( $name, $path, $extension ) = fileparse ( $filename, '\..*' );
-    #$filename = $name . $extension;
-    #$filename =~ tr/ /_/;
-    #$filename =~ s/[^$safe_filename_characters]//g;
-    #if ( $filename =~ /^([$safe_filename_characters]+)$/ )
-    #{
-    #    $filename = $1;
-    #}
-    #else
-    #{
-    #    #filename is unsafe
-    #}
-    my $upload_filehandle = upload('file');
-    my @all_lines = <$upload_filehandle>;
+
+    while(<$_[0]>)
+    {
+        print $_;
+    }
+    my @all_lines;
+    die("$#all_lines - $all_lines[0] END");
     return \@all_lines;
 }
 
@@ -291,17 +287,26 @@ sub show_search_results
     my $search_term = shift;
     my $dbh = db_connect( );
     # Get the tables for the current teacher
-    my $query = "select lecture, game_type from mag_$search_term";
+    my $query = "SELECT DISTINCT lecture, game_type FROM mag_$search_term";
     my $result = $dbh->prepare( $query );
     $result->execute( );
     # Put games into array reference
     my $curgames = $result->fetchall_arrayref
     (
         {
-         lecture   => 1,
-         game_type   => 1,
+            lecture   => 1,
+            game_type   => 1,
         }
     );
+    for(my $i = 0; $i <= scalar( @{$curgames} ); $i++)
+    {
+        foreach my $key ( keys ( %{ ${ $curgames }[ $i ] } ) )
+        {
+            print $key." - ";
+            print ${ ${ $curgames }[ $i ] }{$key}."<BR>\n";
+        }
+        ${ ${ $curgames }[ $i ] }{'usr'} = $search_term;
+    }
     # Close DB connection
     db_disconnect( $dbh );
     # Load up template
