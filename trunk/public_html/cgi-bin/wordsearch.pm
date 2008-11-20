@@ -87,9 +87,15 @@ sub add_vert_word
 {
     my $self = shift;
     my $word = shift;
-    for ( my $i = 0; $i < 25; $i++ )
+    # pick a random row to start in
+    my $row_starter = int( rand( 25 ) );
+    # increment up from that starter to the one before the starter 
+    for ( my $i = $row_starter; $i != $row_starter - 1; $i++ )
     {
-        for( my $j = 0; $j < 25; $j++ )
+        # pick a random colomn
+        my $col_starter = int( rand( 25 ) );
+        # increment up from that starter to the one before the starter 
+        for( my $j = $col_starter; $j != $col_starter - 1; $j++ )
         {
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ); $offset++ )
@@ -111,6 +117,16 @@ sub add_vert_word
                 }
                 return 1;
             }
+            # loops our row index back to the begining
+            if( $j  == 24 )
+            {
+                $j = -1;
+            }
+        }
+        # loops our row index back to the begining
+        if( $i  == 24 )
+        {
+            $i = -1;
         }
     }
     return 0;
@@ -120,9 +136,15 @@ sub add_horz_word
 {
     my $self = shift;
     my $word = shift;
-    for ( my $i = 0; $i < 25; $i++ )
+    # pick a random row to start in
+    my $row_starter = int( rand( 25 ) );
+    # increment up from that starter to the one before the starter 
+    for ( my $i = $row_starter; $i != $row_starter - 1; $i++ )
     {
-        for( my $j = 0; $j < 25; $j++ )
+        # pick a random colomn
+        my $col_starter = int( rand( 25 ) );
+        # increment up from that starter to the one before the starter 
+        for( my $j = $col_starter; $j != $col_starter - 1; $j++ )
         {
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ) ; $offset++ )
@@ -145,6 +167,16 @@ sub add_horz_word
                 }
                 return 1;
             }
+            # loops our row index back to the begining
+            if( $j  == 24 )
+            {
+                $j = -1;
+            }
+        }
+        # loops our row index back to the begining
+        if( $i  == 24 )
+        {
+            $i = -1;
         }
     }
     return 0;
