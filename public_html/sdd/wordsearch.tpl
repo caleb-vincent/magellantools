@@ -15,11 +15,14 @@
         var char_array = [ "<TMPL_VAR NAME = "char_array">" ];
         // initializes an array called word_array that contains each element an index for a word 
         var word_array = [ "<TMPL_VAR NAME = "word_array">" ];
+        // initializes an array holding the length of each word index
+        var length_array = [ "<TMPL_VAR NAME = "length_array">" ];
         var tblBody;
         // for the index of the the word being selected, cannot under any circumstances be 625 words. ever.
         var selected_word = 625;
         // will contain the cells that have been selected
         var selected_cells = [];
+        var completed_words = 0;
 
         // Main function: creates and initializes grid
         function start() 
@@ -68,19 +71,54 @@
         // Callback for cell mouse click
         function MClick(cell, tblBody)
         {
-            cell.setAttribute("bgcolor", "33FFFF");
-            cell.removeAttribute("onmouseover");
-            cell.removeAttribute("onmouseout");
             if ( selected_word == 625 )
             {
                 selected_word = cell.getAttribute( "NAME" );
             }
+            if( selected_cells.indexOf( cell ) != -1 )
+            {
+            }
+            else if( selected_word == cell.getAttribute( "NAME" ) && selected_cells.length < length_array[ selected_word ] - 1 )
+            {
+                cell.setAttribute("bgcolor", "33FFFF");
+                cell.removeAttribute("onmouseover");
+                cell.removeAttribute("onmouseout");
+                selected_cells.push( cell );
+            }
+            else if( selected_word == cell.getAttribute( "NAME" ) &&  selected_cells.length == length_array[selected_word] - 1)
+            {
+                cell.setAttribute("bgcolor", "33FFFF");
+                cell.removeAttribute("onmouseover");
+                cell.removeAttribute("onmouseout");
+                selected_cells.push( cell );
+                for( var i = 0; i < selected_cells.length; i++ )
+                {
+                    selected_cells[i].setAttribute("bgcolor", "33DDDD");
+                    selected_cells[i].removeAttribute("onmouseout");
+                    selected_cells[i].removeAttribute("onmouseover");
+                }
+                selected_cells.splice( 0, selected_cells.length );
+                length_array[ selected_word ] = 0;
+                selected_word = 625;
+                completed_words++;
+                if( completed_words == length_array.length )
+                {
+                    alert("You have won the Word Search!");
+                }
+            }
             else
             {
+                for( var i = 0; i < selected_cells.length; i++ )
+                {
+                    selected_cells[i].setAttribute("bgcolor", "#EEEEFF");
+                    selected_cells[i].setAttribute("onmouseover", "this.bgColor='#DDDDFF'");
+                    selected_cells[i].setAttribute("onmouseout", "this.bgColor='#EEEEFF'");
+                }
+                selected_cells.splice( 0, selected_cells.length );
+                selected_word = 625;
             }
         }
 
-        
     </script>  
 </body>
 </html>
