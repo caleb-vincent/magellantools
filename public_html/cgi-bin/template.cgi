@@ -40,7 +40,6 @@ warningsToBrowser( 1 );
 
 # GLOBALS
 my $session;                                                # Global session variable
-my $upload_base = '../sdd/';                                 # This needs to point to where the user folders are created
 
 # TEMPLATE DECLARATION
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
@@ -162,7 +161,7 @@ elsif( param( 'page' ) eq 'Teacher Page' )
 elsif( param( 'page' ) eq 'Add Words')
 {
     # user is trying to add new words
-    
+    get_session( $session );
     print header( );
     if( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
     {
@@ -173,7 +172,6 @@ elsif( param( 'page' ) eq 'Add Words')
             @temp = split( '\n',param( 'teacher-list' ) );
         }
         chomp(@temp);
-        get_session( $session );
         parse_words( \@temp, param( 'lecture-name' ), ($session->param('username') ), param( 'game-type' )  );
         show_teacher( );
     }
@@ -220,10 +218,8 @@ elsif( param( 'page' ) eq 'Logout' )
 # Closes current session
 sub close_session
 {
-   get_session( $_[0] );
-   $_[0]->clear();
-   $_[0]->delete();
-   $_[0]->flush();
+ #  get_session( $_[0] );
+ #  $_[0]->clear();
 }
 
 # PARSE WORDS
@@ -319,6 +315,7 @@ sub show_search_results
 # Displays the teacher page
 sub show_teacher
 {
+#
     $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action, user=>( $session->param( 'username' ) ), errmsg=>$err_msg );
     print $teacher->output( );
 }
