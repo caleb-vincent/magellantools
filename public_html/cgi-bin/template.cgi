@@ -318,7 +318,14 @@ sub show_login
 # Displays the word search
 sub show_wordsearch
 {
-    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', array=>'DUMMY' );
+    # TODO: replace with database querey
+    my @dumb_words = ( "this is !hello21 ", "word", "slime", "ball", "thing", "stuff", "why", "bloody", "not" );
+    my $wordsearch_object = Wordsearch->new();
+    $wordsearch_object->create_wordsearch( @dumb_words );
+    my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
+    my $flattened_words = join( '","', @{ $wordsearch_object->get_word_array() } );
+    my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
+    $wordsearch->param( teacher=>'Dummy', lecture=>'DUMMY', char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style );
     print $wordsearch->output( );
 }
 
