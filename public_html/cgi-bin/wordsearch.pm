@@ -39,8 +39,6 @@ sub create_wordsearch
     }
     #suffle the contents of the array
     @word_array = shuffle( @word_array );
-    # last successfully used direction, 0 for vertical, 1 for horizontal
-    my $last_used_dir = int( rand() );
     # maximum size of a word to be used
     my $max_size = 25;
     my $used_spaces = 0;
@@ -53,10 +51,13 @@ sub create_wordsearch
         {
             $curr_word = uc shift( @word_array ); 
         }
+        # last successfully used direction, 0 for vertical, 1 for horizontal
+        my $use_dir = int( rand(7) );
+        my $use_dir = $use_dir % 2;
         # result of trying to add a word
         my $result = 0;
         # if we used horizontal last
-        if( !$last_used_dir )
+        if( $use_dir == 0 )
         {
             # use a verticle this time
             $result = add_vert_word( $self, $curr_word );
@@ -65,12 +66,6 @@ sub create_wordsearch
             {   
                 # try a hoizontal word
                 $result = add_horz_word( $self, $curr_word );
-                
-                $last_used_dir = $result ? 1 : 0;
-            }
-            else 
-            {
-                $last_used_dir = 1;
             }
         }
         else
@@ -79,11 +74,6 @@ sub create_wordsearch
             if ( $result == 0 )
             {
                 $result = add_vert_word( $self, $curr_word );
-                $last_used_dir = $result ? 0 : 1;
-            }
-            else 
-            {
-                $last_used_dir = 0;
             }
         }
         if ( $result == 0 )
@@ -104,7 +94,7 @@ sub add_vert_word
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ); $offset++ )
             {
-                if( ${$self->get_char_array() }[ ( $i + $offset ) * 25 + $j ] ne "\0" )
+                if( ${$self->get_char_array() }[ ( $i + $offset ) * 25 + $j ] ne "\0" || ($offset + $i) >= 25 )
                 {
                     $no_room = 1;
                 }
@@ -135,14 +125,15 @@ sub add_horz_word
         for( my $j = 0; $j < 25; $j++ )
         {
             my $no_room = 0;
-            for( my $offset = 0; $offset < length( $word ); $offset++ )
+            for( my $offset = 0; $offset < length( $word ) ; $offset++ )
             {
-                if( ${$self->get_char_array() }[ ( $i ) * 25 + $j + $offset ] ne "\0" )
+                if( ${$self->get_char_array() }[ ( $i ) * 25 + ( $j + $offset ) ] ne "\0" || ($offset + $j) >= 25 )
                 {
                     $no_room = 1;
+                    last;
                 }
             }
-            if( !$no_room )
+            if( $no_room == 0 )
             {
                 push( @{ $self->get_length_array() }, 0 );
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
