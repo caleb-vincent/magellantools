@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <link REL = "stylesheet" TYPE = "text/css" href = "default.css" />
+    <link REL = "stylesheet" TYPE = "text/css" href = "<TMPL_VAR NAME = "style">" />
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
 </head>
 <body onload = start()>
@@ -75,7 +75,10 @@
             {
                 selected_word = cell.getAttribute( "NAME" );
             }
-            if( selected_cells.indexOf( cell ) != -1 )
+            if ( selected_word == 625 )
+            {
+            }
+            else if( selected_cells.indexOf( cell ) != -1 )
             {
             }
             else if( selected_word == cell.getAttribute( "NAME" ) && selected_cells.length < length_array[ selected_word ] - 1 )
