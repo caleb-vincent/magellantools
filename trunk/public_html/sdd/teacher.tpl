@@ -36,5 +36,10 @@
                 <INPUT TYPE = "submit" NAME = "page" VALUE = "Your Games" />
             </FORM>
         </DIV>
+        <DIV CLASS = "error-box">
+            <FONT COLOR = "#ff0000">
+                <TMPL_VAR NAME = "errmsg">
+            </FONT>
+        </DIV>
     </BODY>
 <HTML>
