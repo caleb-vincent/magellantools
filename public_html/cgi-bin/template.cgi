@@ -18,7 +18,8 @@ use CGI::Carp (
 use CGI;
 use Digest::SHA qw/sha256_hex/;
 use CGI::Session;
-require '../../MagellanTools/database.dat';     # contains database information
+use File::Basename;
+require '../../MagellanTools/database.dat';                 # contains database information
 
 
 ########## NOTES ###########################
@@ -45,7 +46,7 @@ my $upload_base = '../sdd/';                                 # This needs to poi
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
 my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
 my $gamelist = HTML::Template->new( filename=>'../sdd/your_games.tpl' );
-my $searchresults = HTML::Template->new( filename=>'../sdd/teachers_games.tpl' );
+my $searchresults = HTML::Template->new( filename=>'../sdd/teacher_games.tpl' );
 my $wordsearch = HTML::Template->new( filename=>'../sdd/wordsearch.tpl' );
 
 # PARAMETER VARIABLES
@@ -86,6 +87,7 @@ elsif ( param( 'page' ) eq 'Login' )
         # user logged in successfully
         # bringing them to teacher page
         make_session($session, param( 'login-user' ) );
+        $err_msg = "";
         show_teacher( );
     }
     else
@@ -114,6 +116,7 @@ elsif ( param( 'page' ) eq 'Register' )
             # user was added successfully
             # bring them to the teacher page
             make_session( $session, param( 'register-user' ) );
+            $err_msg = "";
             show_teacher( );
         }
         else
@@ -138,12 +141,14 @@ elsif( param( 'page' ) eq 'Your Games' )
     print header( );
     # Get the session
     get_session( $session );
+    $err_msg = "";
     show_gamelist();
 }
 elsif( param( 'page' ) eq 'Find Teacher' )
 {
     # display game page
     print header( );
+    $err_msg = "";
     show_search_results( param( 'teacher-name' ) );
 }
 elsif( param( 'page' ) eq 'Teacher Page' )
@@ -151,23 +156,30 @@ elsif( param( 'page' ) eq 'Teacher Page' )
     # display teacher page
     print header();
     get_session( $session );
+    $err_msg = "";
     show_teacher( );
 }
 elsif( param( 'Page' ) eq 'Add Words')
 {
     # user is trying to add new words
+    get_session( $session );
     if( !param( 'teacher-upload' )  && param( 'teacher-list' ) )
     {
         # there is no file being uploaded
-        
+
     }
     elsif( param( 'teacher-upload' ) )
     {
         # there is a file to read
+        get_session( $session );
+        parse_words( read_file( param( 'file' ) ), param('username') );
+        show_teacher();
     }
     else
     {
         # form is blank
+        $err_msg = "Please fill in the appropriate information, Foo\'";
+        show_teacher( );
     }
 }
 elsif( param( 'page' ) eq 'wordsearch' )
@@ -176,12 +188,61 @@ elsif( param( 'page' ) eq 'wordsearch' )
     show_wordsearch( );
 }
 
+
 #########################################
 #                                       #
 #             SUBROUTINES               #
 #                                       #
-#                                       #
 #########################################
+
+
+# PARSE WORDS
+# Accepts array reference, lecture, username, gametype
+# Adds words to database
+sub parse_words
+{
+    # parse words
+    my @lines = @{ shift };
+    my $lecture = shift;
+    my $user = shift;
+    my $gametype = shift;
+
+    # add to database
+    my $query = "SELECT MAX('word_num') FROM mag_".$user;
+    my $dbh = db_connect( );
+    my $ret = $dhb->do( $query );
+    my $count = $ret;
+    for(my $i = 0; i  < $#lines; $i++ )
+    {
+        query = "INSERT INTO mag_".$user." VALUES( $gametype,$lecture,$lines[i], $count )";
+        $dbh->do( $query );
+        $count++;
+    }
+}
+
+# READ FILE
+# Accepts file param
+# Returns file contents as array of lines
+sub read_file
+{
+    my $filename = shift;
+    my $safe_filename_characters = "a-zA-Z0-9_.-";
+    my ( $name, $path, $extension ) = fileparse ( $filename, '\..*' );
+    $filename = $name . $extension;
+    $filename =~ tr/ /_/;
+    $filename =~ s/[^$safe_filename_characters]//g;
+    if ( $filename =~ /^([$safe_filename_characters]+)$/ )
+    {
+        $filename = $1;
+    }
+    else
+    {
+        #filename is unsafe
+    }
+    my $upload_filehandle = upload("photo");
+    my @all_lines = <$upload_filehandle>;
+    return \@all_lines;
+}
 
 # SHOW GAMES LIST
 # Accepts no input
@@ -206,14 +267,14 @@ sub show_gamelist
     # Close DB connection
     db_disconnect( $dbh );
     # Load up template
-    $gamelist->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $session->param( 'username') ), games=>$curgames );
+    $gamelist->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $session->param( 'username') ), games=>$curgames, errmsg=>$err_msg );
     print $gamelist->output( );
 }
 
 # SHOW SEARCH RESULTS
 # Accepts no input
 # Displays the game list
-sub show_search_results()
+sub show_search_results
 {
     my $search_term = shift;
     my $dbh = db_connect( );
@@ -232,7 +293,7 @@ sub show_search_results()
     # Close DB connection
     db_disconnect( $dbh );
     # Load up template
-    $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>$curgames );
+    $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>$curgames, errmsg=>$err_msg );
     print $searchresults->output( );
 }
 
@@ -241,7 +302,7 @@ sub show_search_results()
 # Displays the teacher page
 sub show_teacher
 {
-    $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action, user=>( $session->param( 'username' ) ) );
+    $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action, user=>( $session->param( 'username' ) ), errmsg=>$err_msg );
     print $teacher->output( );
 }
 
@@ -280,7 +341,6 @@ sub validate_user
 
     # prepare a statement to get database row that matches username
     my $statement = "SELECT * FROM mag_Login WHERE user_name = '$user'";
-#   "SELECT * FROM mag_Login WHERE user_name = 'tom' OR 1"; $pass_hash=$row_ary[1];"''";
 
     # store the database row in an array
     my @row_ary = $dbh->selectrow_array( $statement );
@@ -318,7 +378,7 @@ sub add_user
     # if we got this user
     if( $row_ary[0] ne "" )
     {
-        #! Early Return
+        # Early Return
         return 0;
     }
 
