@@ -164,7 +164,7 @@ elsif( param( 'page' ) eq 'Add Words')
     # user is trying to add new words
     print header( );
     get_session( $session );
-    if( !param( 'teacherupload' )  && param( 'teacher-list' ) )
+    if( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
     {
         # there is no file being uploaded
         my @temp = split( '\r\n',param( 'teacher-list' ) );
@@ -176,7 +176,7 @@ elsif( param( 'page' ) eq 'Add Words')
         parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' )  );
         show_teacher( );
     }
-    elsif( param( 'teacherupload' ) && !param('teacher-list') )
+    elsif( param( 'teacherupload' ) && !param('teacher-list') && param( 'game-type' ) )
     {
         # there is a file to read
         my $teacherupload = param('teacherupload');
@@ -200,6 +200,11 @@ elsif( param( 'page' ) eq 'wordsearch' )
     print header( );
     show_wordsearch( );
 }
+elsif( param( 'page' ) eq 'Logout' )
+{
+    close_session( $session );
+    show_login();
+}
 
 
 #########################################
@@ -208,6 +213,16 @@ elsif( param( 'page' ) eq 'wordsearch' )
 #                                       #
 #########################################
 
+
+# CLOSE SESSION
+# Accepts global session
+# Closes current session
+sub close_session
+{
+   get_session( $_[0] );
+   $_[0]->clear();
+   $_[0]->delete();
+}
 
 # PARSE WORDS
 # Accepts array reference, lecture, username, gametype
@@ -228,9 +243,9 @@ sub parse_words
     my $count = $ret->rows;
     for(my $i = 0; $i <= scalar( @lines ); $i++ )
     {
-        $lines =~ s#'#\'#g
-        $lines =~ s#select##gi
-        $lines =~ s#drop##gi
+        $lines[$i] =~ s#'#\'#g;
+        $lines[$i] =~ s#select##gi;
+        $lines[$i] =~ s#drop##gi;
         
         if($lines[$i] ne "")
         {
@@ -424,7 +439,7 @@ sub make_session
     $_[0] = new CGI::Session( undef,undef,{ 'Directory'=>"/tmp" } );
     $_[0]->param( 'username',$_[1] );
     $_[0]->expire( '+8h' );
-    my $cookie = CGI::cookie( CGISESSID => $session->id );
+    my $cookie = CGI::cookie( $_[0]->id() => $session->id );
     print header( -cookie=>$cookie );
 }
 
