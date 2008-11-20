@@ -12,8 +12,8 @@
 					<TMPL_LOOP NAME= "games">
 						<BR />
 						<BR />
-						<A HREF = "<TMPL_VAR NAME = "game_link">
-							<TMPL_VAR NAME = "game_name"> - <TMPL_VAR NAME = "game_type">
+						<A HREF = "<TMPL_VAR NAME = "link">">
+							<TMPL_VAR NAME = "lecture"> - <TMPL_VAR NAME = "game_type">
 						</A>
 						<BR />
 					</TMPL_LOOP>

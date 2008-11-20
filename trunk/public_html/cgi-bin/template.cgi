@@ -230,28 +230,13 @@ sub parse_words
     {
         if($lines[$i] ne "")
         {
-            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','' )";
+            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','' )";
             $dbh->do( $query );
             $count++;
         }
     }
     $err_msg = "Added $#lines words to lecture: $lecture, Foo\'";
     db_disconnect( $dbh );
-}
-
-# READ FILE
-# Accepts file param
-# Returns file contents as array of lines
-sub read_file
-{
-
-    while(<$_[0]>)
-    {
-        print $_;
-    }
-    my @all_lines;
-    die("$#all_lines - $all_lines[0] END");
-    return \@all_lines;
 }
 
 # SHOW GAMES LIST
@@ -263,15 +248,16 @@ sub show_gamelist
     my $dbh = db_connect( );
     # Get the tables for the current teacher
     my $user = ( $session->param( 'username' ) );
-    my $query = "select lecture, game_type from mag_$user";
+    my $query = "SELECT DISTINCT lecture, game_type, link FROM mag_$user";
     my $result = $dbh->prepare( $query );
     $result->execute( );
     # Put games into array reference
     my $curgames = $result->fetchall_arrayref
     (
         {
-         lecture   => 1,
-         game_type   => 1,
+         lecture    => 1,
+         game_type  => 1,
+         link       => 1,
         }
     );
     # Close DB connection
@@ -289,7 +275,7 @@ sub show_search_results
     my $search_term = shift;
     my $dbh = db_connect( );
     # Get the tables for the current teacher
-    my $query = "SELECT DISTINCT lecture, game_type FROM mag_$search_term";
+    my $query = "SELECT DISTINCT lecture, game_type, link FROM mag_$search_term";
     my $result = $dbh->prepare( $query );
     $result->execute( );
     # Put games into array reference
@@ -297,18 +283,10 @@ sub show_search_results
     (
         {
             lecture   => 1,
-            game_type   => 1,
+            game_type => 1,
+            link => 1,
         }
     );
-    for(my $i = 0; $i <= scalar( @{$curgames} ); $i++)
-    {
-        foreach my $key ( keys ( %{ ${ $curgames }[ $i ] } ) )
-        {
-            print $key." - ";
-            print ${ ${ $curgames }[ $i ] }{$key}."<BR>\n";
-        }
-        ${ ${ $curgames }[ $i ] }{'usr'} = $search_term;
-    }
     # Close DB connection
     db_disconnect( $dbh );
     # Load up template
@@ -340,14 +318,7 @@ sub show_login
 # Displays the word search
 sub show_wordsearch
 {
-    # TODO: replace with database querey
-    my @dumb_words = ( "this is !hello21 ", "word", "slime", "ball", "thing", "stuff", "why", "bloody", "not" );
-    my $wordsearch_object = Wordsearch->new();
-    $wordsearch_object->create_wordsearch( @dumb_words );
-    my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
-    my $flattened_words = join( '","', @{ $wordsearch_object->get_word_array() } );
-    my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
-    $wordsearch->param( teacher=>'Dummy', lecture=>'DUMMY', char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style );
+    $wordsearch->param( teacher=>'dummy', lecture=>'DUMMY', array=>'DUMMY' );
     print $wordsearch->output( );
 }
 
@@ -425,6 +396,7 @@ sub add_user
          lecture char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word_num int(6) NOT NULL,
+         link char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          `key` INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY )  ENGINE=MyISAM DEFAULT CHARSET=ucs2 collate ucs2_bin';
         $dbh->do( $query );
     }
