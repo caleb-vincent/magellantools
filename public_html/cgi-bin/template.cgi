@@ -404,9 +404,10 @@ sub show_wordsearch
     my $wordsearch_object = Wordsearch->new();
     $wordsearch_object->create_wordsearch( @dumb_words );
     my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
-    my $flattened_words = join( '","', @{ $wordsearch_object->get_word_array() } );
+    my $flattened_words = join( ',', @{ $wordsearch_object->get_word_array() } );
     my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
-    $wordsearch->param( teacher=>$user, lecture=>param( 'lecture' ), char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style );
+    my $word_list = join( '","', @{ $wordsearch_object->get_word_list() } );
+    $wordsearch->param( teacher=>$user, lecture=>param( 'lecture' ), char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list );
     print $wordsearch->output( );
 }
 

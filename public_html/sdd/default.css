@@ -207,3 +207,45 @@
     
     height:5%;
 }
+
+.word-list
+{
+    text-align: center;
+    color: #666666;
+
+    position: absolute;
+    right: 10%;
+    top: 1%;
+
+    
+    width: 20%;
+    height: 98% auto;
+
+    background-color: #EEEEFF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+
+}
+
+.blank_letter
+{
+}
+
+.over_letter
+{
+}
+
+.click_letter
+{
+}
+
+.new-word
+{
+}
+
+.found-word
+{
+    text-decoration: line-through;
+}
