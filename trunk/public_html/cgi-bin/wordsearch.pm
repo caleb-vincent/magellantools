@@ -17,8 +17,10 @@ sub new
     my @word_array = ( 625 ) x 625;
     #the array containing the length of each word index
     my @length_array;
+    # the array containing all of the words in the word search
+    my @word_list;
     
-    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ] };
+    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ], word_list=>[ @word_list ] };
     bless $obj, $class;
     return $obj;
 }
@@ -137,6 +139,7 @@ sub add_vert_word
                     ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
                     ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
                 }
+                push( @{ $self->{word_list} }, $word );
                 return 1;
             }
             # loops our row index back to the begining
@@ -172,7 +175,14 @@ sub add_horz_word
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ) ; $offset++ )
             {
-                if( ${ $self->{word_array} }[ ( $i ) * 25 + ( $j + $offset ) ] != 625 || ($offset + $j) >= 25 )
+                
+                 my $index = ( $i ) * 25 + ( $j + $offset );
+                if( $index >= 625 )
+                {
+                    $no_room = 1;
+                    last;
+                }
+                if( ${ $self->{word_array} }[ $index ] != 625 || ($offset + $j) >= 25 )
                 {
                     $no_room = 1;
                     last;
@@ -220,6 +230,12 @@ sub get_length_array()
 {
     my $self = shift;
     return $self->{ length_array };
+}
+
+sub get_word_list()
+{
+    my $self = shift;
+    return $self->{ word_list };
 }
 
 1;
