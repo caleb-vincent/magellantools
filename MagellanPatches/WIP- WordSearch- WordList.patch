@@ -1,0 +1,178 @@
+Index: cgi-bin/template.cgi
+===================================================================
+--- cgi-bin/template.cgi	(revision 57)
++++ cgi-bin/template.cgi	(working copy)
+@@ -364,7 +364,8 @@
+     my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
+     my $flattened_words = join( '","', @{ $wordsearch_object->get_word_array() } );
+     my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
+-    $wordsearch->param( teacher=>$user, lecture=>param( 'lecture' ), char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style );
++    my $word_list = join( '","', @{ $wordsearch_object->get_word_list() } );
++    $wordsearch->param( teacher=>$user, lecture=>param( 'lecture' ), char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list );
+     print $wordsearch->output( );
+ }
+ 
+Index: cgi-bin/wordsearch.pm
+===================================================================
+--- cgi-bin/wordsearch.pm	(revision 61)
++++ cgi-bin/wordsearch.pm	(working copy)
+@@ -17,8 +17,10 @@
+     my @word_array = ( 625 ) x 625;
+     #the array containing the length of each word index
+     my @length_array;
++    # the array containing all of the words in the word search
++    my @word_list;
+     
+-    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ] };
++    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ], word_list=>[ @word_list ] };
+     bless $obj, $class;
+     return $obj;
+ }
+@@ -137,6 +139,7 @@
+                     ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
+                     ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
+                 }
++                push( @{ $self->{word_list} }, $word );
+                 return 1;
+             }
+             # loops our row index back to the begining
+@@ -172,11 +175,18 @@
+             my $no_room = 0;
+             for( my $offset = 0; $offset < length( $word ) ; $offset++ )
+             {
+-                if( ${ $self->{word_array} }[ ( $i ) * 25 + ( $j + $offset ) ] != 625 || ($offset + $j) >= 25 )
++                
++                 my $index = ( $i ) * 25 + ( $j + $offset );
++                if( $index >= 625 )
+                 {
+                     $no_room = 1;
+                     last;
+                 }
++                if( ${ $self->{word_array} }[ $index ] != 625 || ($offset + $j) >= 25 )
++                {
++                    $no_room = 1;
++                    last;
++                }
+             }
+             if( $no_room == 0 )
+             {
+@@ -222,4 +232,10 @@
+     return $self->{ length_array };
+ }
+ 
++sub get_word_list()
++{
++    my $self = shift;
++    return $self->{ word_list };
++}
++
+ 1;
+\ No newline at end of file
+Index: sdd/default.css
+===================================================================
+--- sdd/default.css	(revision 57)
++++ sdd/default.css	(working copy)
+@@ -207,3 +207,45 @@
+     
+     height:5%;
+ }
++
++.word-list
++{
++    text-align: center;
++    color: #666666;
++
++    position: absolute;
++    right: 10%;
++    top: 1%;
++
++    
++    width: 20%;
++    height: 98% auto;
++
++    background-color: #EEEEFF;
++
++    border-color: #222222;
++    border-style: solid;
++    border-width: thin;
++
++}
++
++.blank_letter
++{
++}
++
++.over_letter
++{
++}
++
++.click_letter
++{
++}
++
++.new-word
++{
++}
++
++.found-word
++{
++    text-decoration: line-through;
++}
+Index: sdd/wordsearch.tpl
+===================================================================
+--- sdd/wordsearch.tpl	(revision 58)
++++ sdd/wordsearch.tpl	(working copy)
+@@ -4,6 +4,8 @@
+     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
+ </head>
+ <body onload = start()>
++    <DIV CLASS = "word-list" ID= "word-list" >
++    </DIV>
+     <script type="text/javascript">
+         // This is the javascript file that contains the playable bingo game. 
+ 
+@@ -17,6 +19,8 @@
+         var word_array = [ "<TMPL_VAR NAME = "word_array">" ];
+         // initializes an array holding the length of each word index
+         var length_array = [ "<TMPL_VAR NAME = "length_array">" ];
++        // initializes an array holding all of the words in the wordsearch
++        var word_list = [ "<TMPL_VAR NAME = "word_list">" ];
+         var tblBody;
+         // for the index of the the word being selected, cannot under any circumstances be 625 words. ever.
+         var selected_word = 625;
+@@ -35,7 +39,7 @@
+             table.setAttribute("border", "1");
+             table.setAttribute("width", boxwidth * numcols );
+             table.setAttribute( "bgcolor", "#EEEEFF" );
+-
++            
+             // one extra row for the "BINGO" header
+             for ( var i = 0; i < numrows; i++ ) 
+             {
+@@ -66,6 +70,17 @@
+             }
+             table.appendChild(tblBody);
+             body.appendChild(table);
++            
++            var theDiv = document.getElementById( "word-list" );
++            for( var k = 0; k < word_list.length; k++ )
++            {
++                var listWord = document.createTextNode( word_list[k] );
++                //listWord.setAttribute( "ID", word_array[k] );
++                theDiv.appendChild( listWord );
++                theDiv.appendChild( document.createElement( "BR" ) );
++            }
++            
++            
+         }
+         
+         // Callback for cell mouse click
+@@ -123,6 +138,7 @@
+             }
+         }
+ 
+-    </script>  
++    </script>
++    
+ </body>
+ </html>
