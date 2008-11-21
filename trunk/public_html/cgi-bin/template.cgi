@@ -71,11 +71,28 @@ my $gamelist_action = 'template.cgi';                       # Game list form act
 ##############################################
 
 
-if( !param( ) || param( 'page' ) eq 'Home' )
+if( !param( ) || param( 'page' ) eq 'Home')
 {
     # user has just reached our page
     # show them the login/register modules
+    get_session( $session );
+    if(defined($session))
+    {
+        $err_msg = "";
+        print header();
+        show_teacher();
+    }
+    else
+    {
+        $err_msg = "";
+        print header( );
+        show_login( );
+    }
+}
+elsif ( param( 'page' ) eq 'Home' && $session )
+{
     $err_msg = "";
+    print header( );
     show_login( );
 }
 elsif ( param( 'page' ) eq 'Login' )
@@ -93,6 +110,7 @@ elsif ( param( 'page' ) eq 'Login' )
     {
         # user failed to give proper credentials
         $err_msg = "Invalid username and/or password";
+        print header( );
         show_login( );
     }
 }
@@ -104,6 +122,7 @@ elsif ( param( 'page' ) eq 'Register' )
         # user did not enter a password for registration
         # let them know and return to login
         $err_msg = "Password must not be blank, Foo\'";
+        print header( );
         show_login( );
     }
     elsif( param( 'register-password') eq param( 'confirm-password' ) )
@@ -123,6 +142,7 @@ elsif ( param( 'page' ) eq 'Register' )
             # user is already in our database
             # return them to login and let them know
             $err_msg = "User already exists, Foo\'";
+            print header( );
             show_login( );
         }
     }
@@ -131,6 +151,7 @@ elsif ( param( 'page' ) eq 'Register' )
         # user's password's do not agree
         # change error message and return to login
         $err_msg = "Passwords do not match";
+        print header( );
         show_login();
     }
 }
@@ -202,6 +223,7 @@ elsif( param( 'page' ) eq 'wordsearch' || param( 'page' ) eq 'WOR' )
 elsif( param( 'page' ) eq 'Logout' )
 {
     close_session( $session );
+    $err_msg = 'You have logged out, Foo\'';
     show_login();
 }
 
@@ -218,8 +240,11 @@ elsif( param( 'page' ) eq 'Logout' )
 # Closes current session
 sub close_session
 {
- #  get_session( $_[0] );
- #  $_[0]->clear();
+    get_session( $_[0] );
+    $_[0]->clear();
+    my $cookie = CGI::cookie( -name=>'CGISESSID', -value=> 0, -expires=>'-1h' );
+    print header( -cookie=>$cookie );
+
 }
 
 # PARSE WORDS
@@ -344,7 +369,6 @@ sub show_teacher
 # and prints the header
 sub show_login
 {
-    print header( );
     $login->param( title=>$login_title, style=>$login_style, action=>$login_action, errmsg=>$err_msg );
     print $login->output( );
 }
@@ -481,12 +505,22 @@ sub make_session
 # cookies.
 sub get_session
 {
-    my $cookie = CGI::cookie( -name => "session" );
+    my $cookie = CGI::cookie( -name => "CGISESSID" );
     if ( $cookie )
     {
         CGI::Session->name( $cookie );
+    } else
+    {
+        if( param( 'page' ) eq 'Home' )
+        {
+            $err_msg = "";
+        } else
+        {
+            $err_msg = "Invalid Session ID";
+        }
+        $session = undef;
+        print header( );
+        show_login( );
     }
-    $err_msg = "Invalid Session ID";
-    $_[0] = new CGI::Session( "driver:File",$cookie,{ 'Directory'=>"/tmp" } ) or show_login( );
-    $err_msg = "";
+    $_[0] = new CGI::Session( "driver:File",$cookie,{ 'Directory'=>"/tmp" } );
 }
