@@ -139,7 +139,7 @@ sub add_vert_word
                     ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
                     ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
                 }
-                push( @{ $self->{word_list} }, $word );
+                ${ $self->{word_list} }[$#{ $self->{length_array} }] = $word;
                 return 1;
             }
             # loops our row index back to the begining
@@ -199,6 +199,7 @@ sub add_horz_word
                     ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
                     ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
                 }
+                ${ $self->{word_list} }[$#{ $self->{length_array} }] = $word;
                 return 1;
             }
             # loops our row index back to the begining
