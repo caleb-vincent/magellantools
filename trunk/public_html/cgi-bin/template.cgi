@@ -243,7 +243,7 @@ sub parse_words
         $lines[$i] =~ s#'#\'#g;
         $lines[$i] =~ s#select##gi;
         $lines[$i] =~ s#drop##gi;
-        
+
         if($lines[$i] ne "")
         {
             $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','' )";
@@ -289,24 +289,42 @@ sub show_gamelist
 sub show_search_results
 {
     my $search_term = shift;
+    $search_term =~ s#'##g;
     my $dbh = db_connect( );
     # Get the tables for the current teacher
-    my $query = "SELECT DISTINCT lecture, game_type, link FROM mag_$search_term";
+    my $query = "SELECT user_name FROM mag_Login WHERE UPPER(user_name) LIKE UPPER('%$search_term%')";
     my $result = $dbh->prepare( $query );
     $result->execute( );
-    # Put games into array reference
-    my $curgames = $result->fetchall_arrayref
-    (
+    my @names;
+    my $temp;
+    while( $temp = $result->fetchrow_hashref( ) )
+    {
+        push(@names,$temp->{'user_name'});
+    }
+    if($result->rows <= 0)
+    {
+        db_disconnect( $dbh );
+        my @filler;
+        $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>\@filler, errmsg=>$err_msg );
+        print $searchresults->output( );
+        return;
+    }
+    my @allgames;
+    foreach( @names )
+    {
+        $query = "SELECT DISTINCT lecture, game_type, link FROM mag_$_";
+        $result = $dbh->prepare( $query );
+        $result->execute( );
+        # Put games into array reference
+        while( $temp = $result->fetchrow_hashref( ) )
         {
-            lecture   => 1,
-            game_type => 1,
-            link => 1,
+            push( @allgames, $temp );
         }
-    );
+    }
     # Close DB connection
     db_disconnect( $dbh );
     # Load up template
-    $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>$curgames, errmsg=>$err_msg );
+    $searchresults->param( title=>$gamelist_title, style=>$gamelist_style, action=>$gamelist_action, user=>( $search_term ), games=>\@allgames, errmsg=>$err_msg );
     print $searchresults->output( );
 }
 
@@ -356,7 +374,7 @@ sub show_wordsearch
     }
     # Close DB connection
     db_disconnect( $dbh );
-    
+
     # TODO: replace with database querey
     #my @dumb_words = ( "this is !hello21 ", "word", "slime", "ball", "thing", "stuff", "why", "bloody", "not" );
     my $wordsearch_object = Wordsearch->new();
