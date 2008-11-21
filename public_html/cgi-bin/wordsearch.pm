@@ -5,7 +5,6 @@ use warnings;
 
 use List::Util qw(shuffle);
 
-
 # the class initiallizer
 sub new 
 {
@@ -42,38 +41,41 @@ sub create_wordsearch
     # maximum size of a word to be used
     my $max_size = 25;
     my $used_spaces = 0;
+    my $tried_words = 0;
+    my @random_numbers = ( 0, 24, 12, 5, 17, 7, 2, 20 );
     while ( $max_size > 1 && $used_spaces < 468 && $#word_array >= 0 )
     {
         # since it's shuffled, we can always take of the 1st and remove it form the array
-        my $curr_word = uc shift( @word_array );
+        my $curr_word = shift( @word_array );
         # keep going until we get one small enough
         while( length( $curr_word ) > $max_size )
         {
-            $curr_word = uc shift( @word_array ); 
+            $curr_word = pop( @word_array ); 
         }
+        $curr_word = uc $curr_word;
         # last successfully used direction, 0 for vertical, 1 for horizontal
-        my $use_dir = int( rand(7) );
-        my $use_dir = $use_dir % 2;
+        my $use_dirr = int( rand(2) );
         # result of trying to add a word
         my $result = 0;
+        my $rand_num =  0;
         # if we used horizontal last
-        if( $use_dir == 0 )
+        if( $use_dirr == 0 )
         {
             # use a verticle this time
-            $result = add_vert_word( $self, $curr_word );
+            $result = add_vert_word( $self, $curr_word, $rand_num );
             # if we wern't sucessful
             if ( $result == 0 )
             {   
                 # try a hoizontal word
-                $result = add_horz_word( $self, $curr_word );
+                $result = add_horz_word($self, $curr_word, $rand_num );
             }
         }
         else
         {
-            $result = add_horz_word( $self, $curr_word );
+            $result = add_horz_word( $self, $curr_word, $rand_num );
             if ( $result == 0 )
             {
-                $result = add_vert_word( $self, $curr_word );
+                $result = add_vert_word( $self, $curr_word, $rand_num );
             }
         }
         if ( $result == 0 )
@@ -84,6 +86,15 @@ sub create_wordsearch
         {
             $used_spaces += length( $curr_word );
         }
+        $tried_words++;
+    }
+    my @letters = ( 'A' .. 'Z' );
+    for( my $i = 0; $i <625; $i++ )
+    {
+        if( ${ $self->{word_array} }[$i] == 625 )
+        {
+            ${ $self->{char_array} }[$i] = $letters[ int( rand( 26 ) ) ];
+        }
     }
 }
 
@@ -91,15 +102,16 @@ sub add_vert_word
 {
     my $self = shift;
     my $word = shift;
+    my $rand = shift;
     # pick a random row to start in
-    my $row_starter = int( rand( 25 ) );
+    my $row_starter  = 12;#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i != $row_starter - 1; $i++ )
+    for ( my $i = $row_starter; $i != $row_starter - 1; $i+=2 )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 25 ) );
+        my $col_starter = 12;#$rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j != $col_starter - 1; $j++ )
+        for( my $j = $col_starter; $j != $col_starter - 1; $j+=2 )
         {
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ); $offset++ )
@@ -121,20 +133,20 @@ sub add_vert_word
                 {
                     # put the aproprite letter of the word in to the correct slot in the array
                     my $index = ( $i + $offset ) * 25 + $j;
-                    ${$self->get_char_array() }[ $index ] = substr( $word, $offset, 1 );
-                    ${$self->get_word_array() }[ $index ] = $#{ $self->get_length_array() };
-                    ${ $self->get_length_array() }[ $#{ $self->get_length_array() } ]++;
+                    ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
+                    ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
+                    ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
                 }
                 return 1;
             }
             # loops our row index back to the begining
-            if( $j  == 24 )
+            if( $j  == 26 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 24 )
+        if( $i  == 26 )
         {
             $i = -1;
         }
@@ -146,20 +158,21 @@ sub add_horz_word
 {
     my $self = shift;
     my $word = shift;
+    my $rand = shift;
     # pick a random row to start in
-    my $row_starter = int( rand( 25 ) );
+    my $row_starter = 12;#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i != $row_starter - 1; $i++ )
+    for ( my $i = $row_starter; $i != $row_starter - 1; $i+=2 )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 25 ) );
+        my $col_starter =12;# $rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j != $col_starter - 1; $j++ )
+        for( my $j = $col_starter; $j != $col_starter - 1; $j+=2 )
         {
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ) ; $offset++ )
             {
-                if( ${$self->get_word_array() }[ ( $i ) * 25 + ( $j + $offset ) ] != 625 || ($offset + $j) >= 25 )
+                if( ${ $self->{word_array} }[ ( $i ) * 25 + ( $j + $offset ) ] != 625 || ($offset + $j) >= 25 )
                 {
                     $no_room = 1;
                     last;
@@ -171,20 +184,21 @@ sub add_horz_word
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
                     # put the aproprite letter of the word in to the correct slot in the array
-                    ${$self->get_char_array() }[ ( $i ) * 25 + $j + $offset ] = substr( $word, $offset, 1 );
-                    ${$self->get_word_array() }[ ( $i ) * 25 + $j + $offset ] = $#{ $self->get_length_array() };
-                    ${ $self->get_length_array() }[ $#{ $self->get_length_array() } ]++;
+                    my $index = ( $i  * 25 ) + $j + $offset;
+                    ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
+                    ${ $self->{word_array} }[ $index ] = $#{ $self->{length_array} };
+                    ${ $self->{length_array} }[ $#{ $self->{length_array} } ]++;
                 }
                 return 1;
             }
             # loops our row index back to the begining
-            if( $j  == 24 )
+            if( $j  == 26 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 24 )
+        if( $i  == 26 )
         {
             $i = -1;
         }
