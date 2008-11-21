@@ -76,6 +76,7 @@
             {
                 var newDiv = document.createElement('div');
                 newDiv.setAttribute( "ID", k );
+                newDiv.setAttribute( "CLASS", "new-word" );
                 var listWord = document.createTextNode( word_list[k] );
                 newDiv.appendChild( listWord );
                 theDiv.appendChild( newDiv );
@@ -128,8 +129,11 @@
                         selected_cells[i].removeAttribute("onmouseover");
                         selected_cells[i].removeAttribute("onmouseout");
                     }
+                    document.getElementById( selected_word ).setAttribute( "CLASS", "found-word" );
                     selected_cells.splice( 0, selected_cells.length );
+                    selected_word = 625;
                 }
+                
             }
             
         }
