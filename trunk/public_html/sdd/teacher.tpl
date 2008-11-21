@@ -15,7 +15,6 @@
                 Game: 
                 <INPUT TYPE = "radio" NAME = "game-type" VALUE = "BIN"> Bingo
                 <INPUT TYPE = "radio" NAME = "game-type" VALUE = "WOR"> Wordsearch
-                <INPUT TYPE = "radio" NAME = "game-type" VALUE = "CRO"> Crossword
                 <BR />
                 <STRONG>-- PICK ONE: --</STRONG>
                 <BR />
