@@ -42,7 +42,7 @@ sub create_wordsearch
     # maximum size of a word to be used
     my $max_size = 25;
     my $used_spaces = 0;
-    while ( $max_size > 1 && $used_spaces < 625 && $#word_array >= 0 )
+    while ( $max_size > 1 && $used_spaces < 468 && $#word_array >= 0 )
     {
         # since it's shuffled, we can always take of the 1st and remove it form the array
         my $curr_word = uc shift( @word_array );
@@ -80,6 +80,10 @@ sub create_wordsearch
         {
             $max_size = length( $curr_word ) - 1;
         }
+        else
+        {
+            $used_spaces += length( $curr_word );
+        }
     }
 }
 
@@ -100,7 +104,12 @@ sub add_vert_word
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ); $offset++ )
             {
-                if( ${$self->get_char_array() }[ ( $i + $offset ) * 25 + $j ] ne "\0" || ($offset + $i) >= 25 )
+                my $index = ( $i + $offset ) * 25 + $j;
+                if( $index >= 625 )
+                {
+                    $no_room = 1;
+                }
+                elsif( ${$self->get_word_array() }[ $index ] != 625 || ($offset + $i) >= 25 )
                 {
                     $no_room = 1;
                 }
@@ -111,8 +120,9 @@ sub add_vert_word
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
                     # put the aproprite letter of the word in to the correct slot in the array
-                    ${$self->get_char_array() }[ ( $i + $offset ) * 25 + $j ] = substr( $word, $offset, 1 );
-                    ${$self->get_word_array() }[ ( $i + $offset ) * 25 + $j ] = $#{ $self->get_length_array() };
+                    my $index = ( $i + $offset ) * 25 + $j;
+                    ${$self->get_char_array() }[ $index ] = substr( $word, $offset, 1 );
+                    ${$self->get_word_array() }[ $index ] = $#{ $self->get_length_array() };
                     ${ $self->get_length_array() }[ $#{ $self->get_length_array() } ]++;
                 }
                 return 1;
@@ -149,7 +159,7 @@ sub add_horz_word
             my $no_room = 0;
             for( my $offset = 0; $offset < length( $word ) ; $offset++ )
             {
-                if( ${$self->get_char_array() }[ ( $i ) * 25 + ( $j + $offset ) ] ne "\0" || ($offset + $j) >= 25 )
+                if( ${$self->get_word_array() }[ ( $i ) * 25 + ( $j + $offset ) ] != 625 || ($offset + $j) >= 25 )
                 {
                     $no_room = 1;
                     last;
