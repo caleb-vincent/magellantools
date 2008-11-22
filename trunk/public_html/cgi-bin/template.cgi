@@ -220,6 +220,17 @@ elsif( param( 'page' ) eq 'Logout' )
     $err_msg = 'You have logged out, Foo\'';
     show_login();
 }
+elsif( param( 'page' ) eq 'Delete' )
+{
+print header( );
+  # delete word list
+  if( param( 'delete' ) )
+  {
+    remove_game( param( 'delete' ) )
+  }
+  get_session( $session );
+  show_gamelist( );
+}
 
 
 #########################################
@@ -228,6 +239,21 @@ elsif( param( 'page' ) eq 'Logout' )
 #                                       #
 #########################################
 
+
+# REMOVE GAME
+# accepts a 'link' string
+sub remove_game
+{
+    $_[0] =~ m/(.*)_-_(.*)/;
+    my $lecture = $1;
+    get_session( $session );
+    my $user = $session->param( 'username' );
+    my $type = $2;
+    #die($lecture);
+    my $query = "DELETE FROM mag_$user WHERE lecture = '$lecture' AND game_type = '$type'";
+    my $dbh = db_connect();
+    $dbh->do( $query );
+}
 
 # CLOSE SESSION
 # Accepts global session
