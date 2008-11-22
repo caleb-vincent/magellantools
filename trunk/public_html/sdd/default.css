@@ -217,8 +217,9 @@
     top: 1%;
 
     
-    width: 20%;
-    height: 98% auto;
+    min-width: 10%;
+    width: 20% auto;
+    height: auto;
 
     background-color: #EEEEFF;
 
