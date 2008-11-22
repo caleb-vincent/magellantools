@@ -371,6 +371,28 @@ sub show_login
 {
     $login->param( title=>$login_title, style=>$login_style, action=>$login_action, errmsg=>$err_msg );
     print $login->output( );
+    # some clean up 
+    # NOTE: this is after the print so the user doesn't notice
+    if ( opendir my $dh, '../sdd/temp' )
+    {
+        my @time = localtime;
+        my @files = readdir $dh;
+        my @delete_files;
+        foreach my $file ( @files )
+        {
+            if( $file =~ m/.*(\d{1,3})\.html/ )
+            {
+                if( $1 - $time[7] > 1 || $1 - $time[7] <= -354 )
+                {
+                    #print $file . "\n " . $1 - $time[7]. "\n";
+                    push( @delete_files, "../sdd/temp/$file" );
+                }
+            }
+        }
+        unlink @delete_files;
+        closedir $dh;
+    }
+    
 }
 
 # SHOW WORDSEARCH PAGE
@@ -384,13 +406,6 @@ sub show_wordsearch
     my $lecture = param( 'lecture' );
     # Put games into array reference
     my @curgames = @{ $dbh->selectall_arrayref( "SELECT word FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'WOR'" ) };
-#    = $result->fetchall_arrayref
-##    (
-#        {
-#            lecture   => param( 'lecture' ),
-#            game_type => param( 'page' )
-       # }
-    #);
     my @dumb_words;
     foreach my $row ( @curgames  )
     {
@@ -399,16 +414,27 @@ sub show_wordsearch
     # Close DB connection
     db_disconnect( $dbh );
 
-    # TODO: replace with database querey
-    #my @dumb_words = ( "this is !hello21 ", "word", "slime", "ball", "thing", "stuff", "why", "bloody", "not" );
     my $wordsearch_object = Wordsearch->new();
     $wordsearch_object->create_wordsearch( @dumb_words );
     my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
     my $flattened_words = join( ',', @{ $wordsearch_object->get_word_array() } );
     my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
     my $word_list = join( '","', @{ $wordsearch_object->get_word_list() } );
-    $wordsearch->param( teacher=>$user, lecture=>param( 'lecture' ), char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list );
+    my @time = localtime;
+    #time stamp format is sec-min-hour-yday
+    my $time_stamp = "$time[0]-$time[1]-$time[2]-$time[7]";
+    my $file_name = "$user-$lecture-$time_stamp.html";
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
     print $wordsearch->output( );
+    # after it has been sent to the user ( don't waste the users time) 
+    # create the template again, but with the "print" template used
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true" );
+    #make a directory for the temp files (unless it exists)
+    mkdir '../sdd/temp';
+    
+    open my $fh, '>', "../sdd/temp/$file_name";
+    print $fh $wordsearch->output( );
+    close $fh;
 }
 
 # USER VALIDATION SUBROUTINE
