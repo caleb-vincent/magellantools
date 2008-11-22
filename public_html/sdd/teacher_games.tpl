@@ -7,19 +7,14 @@
         <DIV CLASS = "games-box">
             <H3>Games for teacher: <TMPL_VAR NAME = "user"></H3>
             <FORM ACTION = "<TMPL_VAR NAME = "action">" METHOD = "get">
-                <BR />
 				<TMPL_IF name = "games">
 					<TMPL_LOOP NAME= "games">
-						<BR />
-						<BR />
 						<A HREF = "<TMPL_VAR NAME = "link">">
 							<TMPL_VAR NAME = "lecture"> - <TMPL_VAR NAME = "game_type">
 						</A>
-						<BR />
 					</TMPL_LOOP>
 				<TMPL_ELSE>
 					No games found!
-					<BR />
 					<BR />
 				</TMPL_IF>
                 <INPUT TYPE = "submit" NAME = "page" VALUE = "Teacher Page" />
