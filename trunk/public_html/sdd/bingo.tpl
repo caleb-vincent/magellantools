@@ -4,6 +4,17 @@
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
 </head>
 <body onload = start()>
+    <DIV CLASS = "bingo-extras">
+        <!-- if we have a print, don't display the print button -->
+        <TMPL_IF name = "print">
+        <!-- otherwise display it, in all its glory -->
+        <TMPL_ELSE>
+            <FORM ACTION = "../cgi-bin/template.cgi" METHOD = "get" ENCTYPE = "multipart/form-data">
+                    <!-- the button, goes to the cached page -->
+                <INPUT TYPE = "button" VALUE="Print" onClick="window.open('<TMPL_VAR NAME = "file">', 'Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture">', 'WIDTH=800, HEIGHT=600,COPYHISTORY=no,MENUBAR=no,STATUS=no,DIRECTORIES=no,LOCATION=no,TOOLBAR=no')" />
+            </FORM>        
+        </TMPL_IF>
+    </DIV>
     <FORM>
         <INPUT TYPE="button" onClick="window.print()" VALUE="Print" >
     </FORM>
@@ -15,17 +26,17 @@
         var freeSpace = new Array(3, 3);
         var boxheight = 50
         var boxwidth = 50
-        var bingo = "BINGO"
+        var bingotext = "BINGO"
         var wincondition = "row"
         var tblBody
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
-        var words = [ "<TMPL_VAR NAME = "word_array">" ];
+        var word_list = [ "<TMPL_VAR NAME = "word_list">" ];
 
         // Main function: creates and initializes grid
         function start() 
         {
             var body = document.getElementsByTagName("body")[0];
-            words = shuffleArray(words);
+            words = ShuffleArray(words);
             
             // creates an HTML <table> element
             var table = document.createElement("table");
@@ -90,7 +101,7 @@
         }
 
         // Randomize list, based on Fisher-Yates shuffling algorithm
-        function shuffleArray(wordlist)
+        function ShuffleArray(wordlist)
         {
             for(var j, x, i = wordlist.length; i; j = parseInt(Math.random() * i), x = wordlist[--i], wordlist[i] = wordlist[j], wordlist[j] = x);
             return wordlist;
