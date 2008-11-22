@@ -229,6 +229,37 @@
 
 }
 
+.word-search
+{
+    text-align: center;
+    
+    position: absolute;
+    left: 10%;
+    top: 1%;
+
+    
+    width: 60% auto;
+    height: 60% auto;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+
+}
+
+.word-extras
+{
+    text-align: center;
+    
+    position: absolute;
+    left: 33%;
+    top: 80%;
+    
+    width: auto;
+    height: auto;
+
+}
+
 .blank_letter
 {
 }

@@ -3,8 +3,24 @@
     <link REL = "stylesheet" TYPE = "text/css" href = "<TMPL_VAR NAME = "style">" />
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
 </head>
-<body onload = start()>
+<TMPL_IF name = "print">
+    <body onload = "printMe()">
+<TMPL_ELSE>
+    <body onload = start()>
+</TMPL_IF>
     <DIV CLASS = "word-list" ID= "word-list" >
+        
+    </DIV>
+    <DIV CLASS = "word-search" ID = "word-search">
+    
+    </DIV>
+    <DIV CLASS = "word-extras">
+        <TMPL_IF name = "print">
+        <TMPL_ELSE>
+            <FORM ACTION = "../cgi-bin/template.cgi" METHOD = "get" ENCTYPE = "multipart/form-data">
+                <INPUT TYPE = "button" VALUE="Print" onClick="window.open('<TMPL_VAR NAME = "file">', 'Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture">', 'WIDTH=1024, HEIGHT=768,COPYHISTORY=no,MENUBAR=no,STATUS=no,DIRECTORIES=no,LOCATION=no,TOOLBAR=no')" />
+            </FORM>        
+        </TMPL_IF>
     </DIV>
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
@@ -28,10 +44,16 @@
         var selected_cells = [];
         var completed_words = 0;
 
+        // Start the main functino then opens print dialog
+        function printMe()
+        {
+            start();
+            window.print();
+        }
         // Main function: creates and initializes grid
         function start() 
         {
-            var body = document.getElementsByTagName("body")[0];
+            var body = document.getElementById( "word-search" );
 
             // creates an HTML <table> element
             var table = document.createElement("table");
