@@ -108,7 +108,7 @@
             {
                 ClearSelected();
                 selected_word = cell.getAttribute( "NAME" );
-                cell.setAttribute("bgcolor", "#999999");
+                 cell.setAttribute("bgcolor", "33FFFF");
                 cell.removeAttribute("onmouseover");
                 cell.removeAttribute("onmouseout");
                 selected_cells.push( cell );
@@ -116,7 +116,7 @@
             // if its part of the current word
             else if ( cell.getAttribute( "NAME") == selected_word )
             {
-                cell.setAttribute("bgcolor", "#999999");
+                 cell.setAttribute("bgcolor", "33FFFF");
                 cell.removeAttribute("onmouseover");
                 cell.removeAttribute("onmouseout");
                 selected_cells.push( cell );
@@ -125,7 +125,8 @@
                 {
                     for( var i = 0; i < selected_cells.length; i++ )
                     {
-                        selected_cells[i].setAttribute("bgcolor", "#555555");
+                        var color = 15597568 + ( selected_word * 50 );
+                        selected_cells[i].setAttribute("bgcolor", color );
                         selected_cells[i].removeAttribute("onmouseover");
                         selected_cells[i].removeAttribute("onmouseout");
                     }
