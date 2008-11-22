@@ -3,7 +3,14 @@
     <link REL = "stylesheet" TYPE = "text/css" href = "<TMPL_VAR NAME = "style">" />
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
 </head>
-<body onload = start()>
+<TMPL_IF name = "print">
+    <body onload = printMe()>
+<!-- If we don't just start he game -->
+<TMPL_ELSE>
+    <body onload = start()>
+</TMPL_IF>
+    <DIV CLASS="bingo-board" ID="bingo-board">
+    </DIV>
     <DIV CLASS = "bingo-extras">
         <!-- if we have a print, don't display the print button -->
         <TMPL_IF name = "print">
@@ -30,10 +37,17 @@
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
         var words = [ "<TMPL_VAR NAME = "word_list">" ];
 
+         // Start the main functino then opens print dialog
+        function printMe()
+        {
+            start();
+            window.print();
+        }
+        
         // Main function: creates and initializes grid
         function start() 
         {
-            var body = document.getElementsByTagName("body")[0];
+            var body = document.getElementById("bingo-board");
             words = ShuffleArray(words);
             
             // creates an HTML <table> element
@@ -41,6 +55,7 @@
             tblBody = document.createElement("tbody");
             table.setAttribute("border", "2");
             table.setAttribute("width", boxwidth*numcols)
+             table.setAttribute( "bgcolor", "#EEEEFF" );
 
             // one extra row for the "BINGO" header
             for (var i=0;i<numrows+1;i++) 
@@ -69,8 +84,8 @@
                     }
                     if(i != 0 && !(i == freeSpace[0] && j == freeSpace[1]-1))
                     {
-                        cell.setAttribute("onmouseover", "this.bgColor='#BBBBBB'");
-                        cell.setAttribute("onmouseout", "this.bgColor='#FFFFFF'");
+                        cell.setAttribute("onmouseover", "this.bgColor='#DDDDFF'");
+                        cell.setAttribute("onmouseout", "this.bgColor='#EEEEFF'");
                         cell.setAttribute("onclick", "MClick(this, tblBody);");
                     }
                     

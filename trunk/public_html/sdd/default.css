@@ -279,3 +279,31 @@
 {
     text-decoration: line-through;
 }
+
+.bingo-extras
+{
+    text-align: center;
+    
+    position: absolute;
+    left: 1%;
+    bottom: 5%;
+    
+    width: 60% auto;
+    height: 10% auto;
+
+}
+.bingo-board
+{
+    text-align: center;
+    
+    position: absolute;
+    left: 30%;
+    
+    width: auto;
+    height: auto;
+    
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+
+}
