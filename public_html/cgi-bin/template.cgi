@@ -39,7 +39,7 @@ require './wordsearch.pm';                      #contains the wordsearch class
 warningsToBrowser( 1 );
 
 # GLOBALS
-my $session;                                                # Global session variable
+my $session = undef;                                                # Global session variable
 
 # TEMPLATE DECLARATION
 my $login = HTML::Template->new( filename=>'../sdd/login.tpl' );
@@ -81,12 +81,6 @@ if( !param( ) || param( 'page' ) eq 'Home')
         $err_msg = "";
         print header();
         show_teacher();
-    }
-    else
-    {
-        $err_msg = "";
-        print header( );
-        show_login( );
     }
 }
 elsif ( param( 'page' ) eq 'Home' && $session )
@@ -536,6 +530,7 @@ sub get_session
     if ( $cookie )
     {
         CGI::Session->name( $cookie );
+        $_[0] = new CGI::Session( "driver:File",$cookie,{ 'Directory'=>"/tmp" } );
     } else
     {
         if( param( 'page' ) eq 'Home' )
@@ -549,5 +544,4 @@ sub get_session
         print header( );
         show_login( );
     }
-    $_[0] = new CGI::Session( "driver:File",$cookie,{ 'Directory'=>"/tmp" } );
 }
