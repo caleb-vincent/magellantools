@@ -5,7 +5,7 @@
 </head>
 <body onload = start()>
     <FORM>
-        <INPUT TYPE="button" onClick="window.print()">
+        <INPUT TYPE="button" onClick="window.print()" VALUE="Print" >
     </FORM>
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
