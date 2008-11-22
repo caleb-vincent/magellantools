@@ -115,7 +115,7 @@ sub create_wordsearch
         if( ${ $self->{word_array} }[$i] == 625 )
         {
             #fill it with a random letter
-            #${ $self->{char_array} }[$i] = $letters[ int( rand( 26 ) ) ];
+            ${ $self->{char_array} }[$i] = $letters[ int( rand( 26 ) ) ];
         }
     }
 }
