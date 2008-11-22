@@ -12,6 +12,7 @@
 						<A HREF = "<TMPL_VAR NAME = "link">">
 							<TMPL_VAR NAME = "lecture"> - <TMPL_VAR NAME = "game_type">
 						</A>
+						<BR />
 					</TMPL_LOOP>
 				<TMPL_ELSE>
 					No games found!

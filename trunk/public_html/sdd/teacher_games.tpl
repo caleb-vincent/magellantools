@@ -12,12 +12,16 @@
 						<A HREF = "<TMPL_VAR NAME = "link">">
 							<TMPL_VAR NAME = "lecture"> - <TMPL_VAR NAME = "game_type">
 						</A>
+						&nbsp&nbsp&nbsp&nbsp Delete:
+						<INPUT TYPE = "radio" NAME = "delete" VALUE = "<TMPL_VAR NAME = "lecture">_-_<TMPL_VAR NAME = "game_type">">
+						<BR />
 					</TMPL_LOOP>
 				<TMPL_ELSE>
 					No games found!
 					<BR />
 				</TMPL_IF>
                 <INPUT TYPE = "submit" NAME = "page" VALUE = "Teacher Page" />
+                <INPUT TYPE = "submit" NAME = "page" VALUE = "Delete" />
             </FORM>
         </DIV>
         <DIV CLASS = "error-box">
