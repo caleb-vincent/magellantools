@@ -4,6 +4,9 @@
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
 </head>
 <body onload = start()>
+    <FORM>
+        <INPUT TYPE="button" onClick="window.print()">
+    </FORM>
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
 
