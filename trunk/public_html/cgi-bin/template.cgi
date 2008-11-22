@@ -47,6 +47,7 @@ my $teacher = HTML::Template->new( filename=>'../sdd/teacher.tpl' );
 my $gamelist = HTML::Template->new( filename=>'../sdd/teacher_games.tpl' );
 my $searchresults = HTML::Template->new( filename=>'../sdd/student_games.tpl' );
 my $wordsearch = HTML::Template->new( filename=>'../sdd/wordsearch.tpl' );
+my $bingo = HTML::Template->new( filename=>'../sdd/bingo.tpl' );
 
 # PARAMETER VARIABLES
 my $err_msg = "";
@@ -213,6 +214,11 @@ elsif( param( 'page' ) eq 'wordsearch' || param( 'page' ) eq 'WOR' )
 {
     print header( );
     show_wordsearch( );
+}
+elsif( param( 'page' ) eq 'bingo' || param( 'page' ) eq 'BIN' )
+{
+    print header( );
+    show_bingo( );
 }
 elsif( param( 'page' ) eq 'Logout' )
 {
@@ -470,6 +476,48 @@ sub show_wordsearch
     #open the filename in the temp directory for writingto
     open my $fh, '>', "../sdd/temp/$file_name";
     print $fh $wordsearch->output( );
+    #close the file
+    close $fh;
+}
+
+# SHOW BINGO PAGE
+# Displays the bingo game
+sub show_bingo
+{
+
+    my $dbh = db_connect( );
+    # Get the tables for the current teacher\
+    my $user = param( 'user' );
+    my $lecture = param( 'lecture' );
+    # Put games into array reference
+    my @curgames = @{ $dbh->selectall_arrayref( "SELECT word FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'BIN'" ) };
+    my @dumb_words;
+    foreach my $row ( @curgames  )
+    {
+        push( @dumb_words, ${ $row}[0] );
+    }
+    # Close DB connection
+    db_disconnect( $dbh );
+    
+    # prepare the bingo game to be sent to ethe template
+    my $word_list = join( '","', @dumb_words );
+    #grab the time
+    my @time = localtime;
+    #time stamp format is sec-min-hour-yday
+    my $time_stamp = "$time[0]-$time[1]-$time[2]-$time[7]";
+    #this is where a temporary copy of the page is stored for printing
+    my $file_name = "$user-$lecture-$time_stamp.html";
+    #parse the tamplate, and insert correct values
+    $bingo->param( teacher=>$user, lecture=>$lecture, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
+    print $bingo->output( );
+    # after it has been sent to the user ( don't waste the users time) 
+    # create the template again, but with the "print" template used
+    $bingo->param( teacher=>$user, lecture=>$lecture, style=>"../$login_style", word_list=>$word_list, print=>"true" );
+    #make a directory for the temp files (unless it exists)
+    mkdir '../sdd/temp';
+    #open the filename in the temp directory for writingto
+    open my $fh, '>', "../sdd/temp/$file_name";
+    print $fh $bingo->output( );
     #close the file
     close $fh;
 }
