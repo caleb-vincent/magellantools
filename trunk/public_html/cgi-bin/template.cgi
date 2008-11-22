@@ -260,6 +260,7 @@ sub remove_game
 # Closes current session
 sub close_session
 {
+    # beware the session! it is evil!
     get_session( $_[0] );
     $_[0]->clear();
     my $cookie = CGI::cookie( -name=>'CGISESSID', -value=> 0, -expires=>'-1h' );
@@ -341,10 +342,12 @@ sub show_search_results
     $result->execute( );
     my @names;
     my $temp;
+    # make it a nice data scructure  an array ;) 
     while( $temp = $result->fetchrow_hashref( ) )
     {
         push(@names,$temp->{'user_name'});
     }
+    # if we ain't got nothin'
     if($result->rows <= 0)
     {
         db_disconnect( $dbh );
@@ -353,6 +356,7 @@ sub show_search_results
         print $searchresults->output( );
         return;
     }
+    # otherwise, display it all
     my @allgames;
     foreach( @names )
     {
@@ -377,7 +381,6 @@ sub show_search_results
 # Displays the teacher page
 sub show_teacher
 {
-#
     $teacher->param( title=>$teacher_title, style=>$teacher_style, action=>$teacher_action, user=>( $session->param( 'username' ) ), errmsg=>$err_msg );
     print $teacher->output( );
 }
@@ -394,21 +397,29 @@ sub show_login
     # NOTE: this is after the print so the user doesn't notice
     if ( opendir my $dh, '../sdd/temp' )
     {
+        #get the current time
         my @time = localtime;
+        # get an array of the files in the directory
         my @files = readdir $dh;
+        # an array for the files to be deleted to be stored in
         my @delete_files;
+        # ofr every file in the directory
         foreach my $file ( @files )
         {
-            if( $file =~ m/.*(\d{1,3})\.html/ )
+            # if it matches the day
+            if( $file =~ m/(.*)?\-(\d{1,3})(.*)?/ )
             {
-                if( $1 - $time[7] > 1 || $1 - $time[7] <= -354 )
+                # if it's more than 2 days
+                if( $time[7] - $2 > 2 || $2 - $time[7] <= -353 )
                 {
-                    #print $file . "\n " . $1 - $time[7]. "\n";
+                    # push it onto the delete list
                     push( @delete_files, "../sdd/temp/$file" );
                 }
             }
         }
+        # delete everything on the delete list
         unlink @delete_files;
+        # close the directory
         closedir $dh;
     }
     
@@ -433,16 +444,22 @@ sub show_wordsearch
     # Close DB connection
     db_disconnect( $dbh );
 
+    #create a new word search object
     my $wordsearch_object = Wordsearch->new();
+    # initialize and fill it.
     $wordsearch_object->create_wordsearch( @dumb_words );
+    # prepare the wordsearch to be sent to ethe template
     my $flattened_chars = join( '","', @{ $wordsearch_object->get_char_array() } );
     my $flattened_words = join( ',', @{ $wordsearch_object->get_word_array() } );
     my $flattened_lengths = join( '","', @{ $wordsearch_object->get_length_array() } );
     my $word_list = join( '","', @{ $wordsearch_object->get_word_list() } );
+    #grab the time
     my @time = localtime;
     #time stamp format is sec-min-hour-yday
     my $time_stamp = "$time[0]-$time[1]-$time[2]-$time[7]";
+    #this is where a temporary copy of the page is stored for printing
     my $file_name = "$user-$lecture-$time_stamp.html";
+    #parse the tamplate, and insert correct values
     $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
     print $wordsearch->output( );
     # after it has been sent to the user ( don't waste the users time) 
@@ -450,9 +467,10 @@ sub show_wordsearch
     $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true" );
     #make a directory for the temp files (unless it exists)
     mkdir '../sdd/temp';
-    
+    #open the filename in the temp directory for writingto
     open my $fh, '>', "../sdd/temp/$file_name";
     print $fh $wordsearch->output( );
+    #close the file
     close $fh;
 }
 
@@ -551,6 +569,7 @@ sub make_session
 # cookies.
 sub get_session
 {
+    # CGI session magic happens here
     my $cookie = CGI::cookie( -name => "CGISESSID" );
     if ( $cookie )
     {
