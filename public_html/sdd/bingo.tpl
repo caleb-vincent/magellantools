@@ -14,10 +14,7 @@
                 <INPUT TYPE = "button" VALUE="Print" onClick="window.open('<TMPL_VAR NAME = "file">', 'Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture">', 'WIDTH=800, HEIGHT=600,COPYHISTORY=no,MENUBAR=no,STATUS=no,DIRECTORIES=no,LOCATION=no,TOOLBAR=no')" />
             </FORM>        
         </TMPL_IF>
-    </DIV>
-    <FORM>
-        <INPUT TYPE="button" onClick="window.print()" VALUE="Print" >
-    </FORM>
+    </DIV> 
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
 
@@ -26,11 +23,11 @@
         var freeSpace = new Array(3, 3);
         var boxheight = 50
         var boxwidth = 50
-        var bingotext = "BINGO"
+        var bingo = "BINGO"
         var wincondition = "row"
         var tblBody
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
-        var word_list = [ "<TMPL_VAR NAME = "word_list">" ];
+        var words = [ "<TMPL_VAR NAME = "word_list">" ];
 
         // Main function: creates and initializes grid
         function start() 
