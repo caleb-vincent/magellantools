@@ -20,6 +20,7 @@
 
         var numrows = 5
         var numcols = 5
+        var userWon = false
         var freeSpace = new Array(3, 3);
         var boxheight = 50
         var boxwidth = 50
@@ -121,7 +122,10 @@
             }
             
             // After each click, check to see if the player has won
-            CheckForWinCondition(tblBody, wincondition);
+            if (!userWon)
+            {
+                CheckForWinCondition(tblBody, wincondition);
+            }
         }
 
         // Checks clicked boxes to see if win condition is fulfilled. Default is full board.
@@ -264,6 +268,7 @@
             if(win)
             {
                 alert("CONGRATS, You have won Bingo!");
+                userWon = true;
             }
             win = true;
         }
