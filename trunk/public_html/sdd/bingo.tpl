@@ -68,7 +68,7 @@
                     }
                     if(i != 0 && !(i == freeSpace[0] && j == freeSpace[1]-1))
                     {
-                        cell.setAttribute("onmouseover", "this.bgColor='#EEEEEE'");
+                        cell.setAttribute("onmouseover", "this.bgColor='#BBBBBB'");
                         cell.setAttribute("onmouseout", "this.bgColor='#FFFFFF'");
                         cell.setAttribute("onclick", "MClick(this, tblBody);");
                     }
@@ -116,7 +116,7 @@
             else if(cell.getAttribute("bgcolor", "red"))
             {
                 cell.setAttribute("bgcolor", "white");
-                cell.setAttribute("onmouseover", "this.bgColor='#EEEEEE'");
+                cell.setAttribute("onmouseover", "this.bgColor='blue'");
                 cell.setAttribute("onmouseout", "this.bgColor='#FFFFFF'");
             }
             
@@ -202,7 +202,6 @@
                     }
                     if(win == true)
                     {
-                        tblBody.childNodes.item(1).childNodes.item(1).setAttribute("bgcolor", "blue");
                         break;
                     }
                 }
