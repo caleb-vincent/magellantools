@@ -6,7 +6,8 @@ use warnings;
 use List::Util qw(shuffle);
 
 #for faster random number generation later. . .
-#use IPC::Mmap::Share;
+use Math::Random::MT::Perl qw(srand rand);
+
 
 # the class initiallizer
 sub new 
@@ -50,7 +51,7 @@ sub create_wordsearch
     my $tried_words = 0;
     my @random_numbers = ( 0, 24, 12, 5, 17, 7, 2, 20 );
     # while the maximum word size is greater than 2, while the board is under 75% full, while there are still words left, and while we haven't failed in adding 50 woirds in a row
-    while ( $max_size > 2 && $used_spaces < ( 625 * .75 ) && $#word_array >= 0 && $tried_words < 50 )
+    while ( $max_size > 2 && $used_spaces < ( 625 * .75 ) && $#word_array >= 0  )
     {
         # since it's shuffled, we can always take of the 1st and remove it form the array
         my $curr_word = shift( @word_array );
@@ -61,7 +62,7 @@ sub create_wordsearch
         }
         $curr_word = uc $curr_word;
         # last successfully used direction, 0 for vertical, 1 for horizontal
-        my $use_dirr = int( rand(2) );
+        my $use_dirr = int( rand(1) );
         # result of trying to add a word
         my $result = 0;
         my $rand_num =  0;
@@ -127,19 +128,20 @@ sub add_vert_word
     my $word = shift;
     my $rand = shift;
     # pick a random row to start in
-    my $row_starter  = 12;#$rand;
+    my $row_starter  = int( rand( 24 ) );
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i != $row_starter - 1; $i+=2 )
+    for ( my $i = $row_starter; $i < 25; $i+=2 )
     {
         # pick a random colomn
-        my $col_starter = 12;#$rand;
+        my $col_starter = int( rand( 24 ) );
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j != $col_starter - 1; $j+=2 )
+        for( my $j = $col_starter; $j < 25; $j+=2 )
         {
             
             my $no_room = 0;
+            my $offset = 0;
             #increment forward from the position to see if there is enough room
-            for( my $offset = 0; $offset < length( $word ); $offset++ )
+            for( ; $offset < length( $word ); $offset++ )
             {
                 my $index = ( $i + $offset ) * 25 + $j;
                 # make sure we are not past the end
@@ -172,6 +174,10 @@ sub add_vert_word
                 ${ $self->{word_list} }[$#{ $self->{length_array} }] = $word;
                 return 1;
             }
+            else
+            {
+                
+            }
             # loops our row index back to the begining
             if( $j  == 26 )
             {
@@ -193,18 +199,19 @@ sub add_horz_word
     my $word = shift;
     my $rand = shift;
     # pick a random row to start in
-    my $row_starter = 12;#$rand;
+    my $row_starter = int( rand( 24 ) );#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i != $row_starter - 1; $i+=2 )
+    for ( my $i = $row_starter; $i < 25; $i++ )
     {
         # pick a random colomn
-        my $col_starter =12;# $rand;
+        my $col_starter = int( rand( 24 ) );# $rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j != $col_starter - 1; $j+=2 )
+        for( my $j = $col_starter; $j < 25; $j++ )
         {
             my $no_room = 0;
+            my $offset = 0;
             # for every letter in the word
-            for( my $offset = 0; $offset < length( $word ) ; $offset++ )
+            for( ; $offset < length( $word ) ; $offset++ )
             {
                 
                 my $index = ( $i ) * 25 + ( $j + $offset );
@@ -238,6 +245,10 @@ sub add_horz_word
                 }
                 ${ $self->{word_list} }[$#{ $self->{length_array} }] = $word;
                 return 1;
+            }
+            else
+            {
+               
             }
             # loops our row index back to the begining
             if( $j  == 26 )
