@@ -138,10 +138,32 @@
    
    position: absolute;
     right: 1%;
+    bottom: 4%;
+   
+    width: 77%;
+    height: 84%;
+
+    background-color: #F6F6FF;
+
+    border-color: #222222;
+    border-style: solid;
+    border-width: thin;
+
+}
+
+.footer 
+{
+   text-align: center;
+   color: #666666;
+   
+   font-size: 12px;
+   
+   position: absolute;
+    right: 1%;
     bottom: 1%;
    
     width: 77%;
-    height: 87%;
+    height: 2%;
 
     background-color: #F6F6FF;
 
