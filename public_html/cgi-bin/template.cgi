@@ -197,7 +197,17 @@ elsif( param( 'page' ) eq 'Add Words')
     # user is trying to add new words
     get_session( $session );
     print header( );
-    if( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
+    my $search_size = param( 'word-options' );
+    if( !param( 'word-options' ) )
+    {
+        $search_size = 25;
+    }
+    if( param( 'game-type' ) eq "WOR" && ( $search_size < 9  || $search_size > 35 ) )
+    {
+        $err_msg = "Give a number between 9 and 35 foo\'";
+        show_teacher( );
+    }
+    elsif( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
     {
         # there is no file being uploaded
         my @temp = split( '\r\n',param( 'teacher-list' ) );
@@ -206,7 +216,7 @@ elsif( param( 'page' ) eq 'Add Words')
             @temp = split( '\n',param( 'teacher-list' ) );
         }
         chomp(@temp);
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ) );
+        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
         show_teacher( );
     }
     elsif( param( 'teacherupload' ) && !param('teacher-list') && param( 'game-type' ) )
@@ -218,7 +228,7 @@ elsif( param( 'page' ) eq 'Add Words')
         {
             $_ =~ s/^(.*)\r$/$1$2/g
         }
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ) );
+        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
         show_teacher( );
     }
     else
@@ -302,6 +312,7 @@ sub parse_words
     my $lecture = $_[1];
     my $user = $_[2];
     my $gametype = $_[3];
+    my $options = $_[4];
     # add to database
     my $query = "SELECT * FROM mag_".$user." WHERE lecture = '".$lecture."'";
     my $dbh = db_connect( );
@@ -313,7 +324,7 @@ sub parse_words
         # $lines[$i] =~ s#'##g; # this is commented out for beta because it slows down the add word process exponentially. We are currently looking for a workaround.
         if($lines[$i] ne "")
         {
-            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','' )";
+            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','".$options."','' )";
             $ret = $dbh->prepare( $query );
             $ret->execute();
             $count++;
@@ -609,6 +620,7 @@ sub add_user
          word char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
          word_num int(6) NOT NULL,
          link char( 255 ) character set ucs2 collate ucs2_bin NOT NULL,
+         options int(2),
          `key` INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY )  ENGINE=MyISAM DEFAULT CHARSET=ucs2 collate ucs2_bin';
         $dbh->do( $query );
     }
