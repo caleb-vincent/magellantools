@@ -154,7 +154,6 @@ elsif ( param( 'page' ) eq 'Register' )
         {
             # user is already in our database
             # return them to login and let them know
-            $err_msg = "User already exists, Foo\'";
             print header( );
             show_login( );
         }
@@ -594,6 +593,11 @@ sub add_user
     my $username = shift;
     my $password = shift;
     my $real_name = shift;
+    if( length( $username ) > 8 )
+    {
+        $err_msg = "Usernames can only be 8 characters long foo\'";
+        return 0;
+    }
 
     # prepare a statement to get database row that matches username
     my $statement = "SELECT * FROM mag_Login WHERE user_name = '$username'";
@@ -605,6 +609,7 @@ sub add_user
     if( $row_ary[0] ne "" )
     {
         # Early Return
+        $err_msg = "User already exists, Foo\'";
         return 0;
     }
 
