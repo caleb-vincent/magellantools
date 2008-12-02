@@ -174,7 +174,7 @@
                     // color them all done
                     for( var i = 0; i < selected_cells.length; i++ )
                     {
-                        var color = 15597568 + ( selected_word * 50 );
+                        var color = 15597568 + ( selected_word * 10 );
                         selected_cells[i].setAttribute("bgcolor", color );
                         selected_cells[i].removeAttribute("onmouseover");
                         selected_cells[i].removeAttribute("onmouseout");
