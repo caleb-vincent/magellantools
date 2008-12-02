@@ -84,7 +84,13 @@ my $gamelist_action = 'template.cgi';                       # Game list form act
 ##############################################
 
 
-if( !param( ) || param( 'page' ) eq 'Home')
+if( !param( ) )
+{
+    $err_msg = "";
+    print header();
+    show_login();
+}
+elsif(param( 'page' ) eq 'Home')
 {
     # user has just reached our page
     # show them the login/register modules
@@ -360,7 +366,7 @@ sub show_search_results
     $result->execute( );
     my @names;
     my $temp;
-    # make it a nice data scructure  an array ;) 
+    # make it a nice data scructure  an array ;)
     while( $temp = $result->fetchrow_hashref( ) )
     {
         push(@names,$temp->{'user_name'});
@@ -411,7 +417,7 @@ sub show_login
 {
     $login->param( title=>$login_title, style=>$login_style, action=>$login_action, errmsg=>$err_msg );
     print $login->output( );
-    # some clean up 
+    # some clean up
     # NOTE: this is after the print so the user doesn't notice
     if ( opendir my $dh, '../sdd/temp' )
     {
@@ -440,7 +446,7 @@ sub show_login
         # close the directory
         closedir $dh;
     }
-    
+
 }
 
 # SHOW WORDSEARCH PAGE
@@ -480,7 +486,7 @@ sub show_wordsearch
     #parse the tamplate, and insert correct values
     $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
     print $wordsearch->output( );
-    # after it has been sent to the user ( don't waste the users time) 
+    # after it has been sent to the user ( don't waste the users time)
     # create the template again, but with the "print" template used
     $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true" );
     #make a directory for the temp files (unless it exists)
@@ -510,7 +516,7 @@ sub show_bingo
     }
     # Close DB connection
     db_disconnect( $dbh );
-    
+
     # prepare the bingo game to be sent to ethe template
     my $word_list = join( '","', @dumb_words );
     #grab the time
@@ -522,7 +528,7 @@ sub show_bingo
     #parse the tamplate, and insert correct values
     $bingo->param( teacher=>$user, lecture=>$lecture, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
     print $bingo->output( );
-    # after it has been sent to the user ( don't waste the users time) 
+    # after it has been sent to the user ( don't waste the users time)
     # create the template again, but with the "print" template used
     $bingo->param( teacher=>$user, lecture=>$lecture, style=>"../$login_style", word_list=>$word_list, print=>"true" );
     #make a directory for the temp files (unless it exists)
