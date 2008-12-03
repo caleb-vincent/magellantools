@@ -78,6 +78,8 @@ copy( './server/images/SiteIcon.ico','../sdd/images/SiteIcon.ico' ) or die( "Una
 copy( './tools/login.sql','../../MagellanTools/login.sql' ) or die( "Unable to copy file 'login.sql'.\nReason:$!\n" );
 copy( './tools/sha256_hex.pl','../../MagellanTools/sha256_hex.pl' ) or die( "Unable to copy file 'sha256_hex.pl'.\nReason:$!\n" );
 copy( './tools/wipe_db.pl','../../MagellanTools/wipe_db.pl' ) or die( "Unable to copy file 'wipe_db.pl'.\nReason:$!\n" );
+copy( './tools/parse_words.pl','../../MagellanTools/parse_words.pl' ) or die( "Unable to copy file 'parse_words.pl'.\nReason:$!\n" );
+
 
 print "Setting permissions...\n\n";
 #set permissions
