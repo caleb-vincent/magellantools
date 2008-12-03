@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <title>Magellan Tools</title>
+
+
+  <META content="" name="Keywords">
+
+  <META content="" name="Description">
+
+  <META content="text/HTML; charset=iso-8859-1" http-equiv="Content-Type">
+
+  <BASE target="main">
+  
+  <LINK REL = "stylesheet" TYPE = "text/css" HREF = "default.css" />
+  <LINK REL="SHORTCUT ICON" HREF="images/SiteIcon.ico">
+</HEAD>
+
+
+<BODY>
+
+<DIV CLASS = "top-corner">
+    <img src="images/etoolslogo.png" class="logo" > </img>
+</DIV>
+
+<DIV CLASS = "top-bar">
+   <H1>Magellan Tools</H1>
+</DIV>
+
+<DIV CLASS = "side-bar">
+    <FORM ACTION = "../cgi-bin/template.cgi" METHOD = "get" ENCTYPE = "multipart/form-data">
+        <INPUT TYPE = "submit" NAME = "page" VALUE = "Logout" CLASS="home-button">
+        <BR />
+        <INPUT TYPE = "submit" NAME = "page" VALUE = "Home" CLASS="home-button" />
+        <BR />
+        <BR />
+    </FORM>
+    <FORM ACTION = "../cgi-bin/template.cgi" METHOD = "get" ENCTYPE = "multipart/form-data">
+        <STRONG>Find Teacher</STRONG>
+        <BR />
+        <INPUT TYPE = "text" NAME = "teacher-name" SIZE = "30" />
+        <BR />
+        <INPUT TYPE = "submit" NAME = "page" VALUE = "Find Teacher" TABINDEX="1"/>
+    </FORM>        
+</DIV>
+
+<DIV CLASS = "main-page">
+    <IFRAME SRC="../cgi-bin/template.cgi" name="main" target="main" frameborder="0" height="100%" width="100%">
+    </IFRAME>
+</DIV>
+
+<DIV CLASS = "footer">
+    Team Magellan: Caleb Vincent, Stephen Mardin, Corey Nolan, John Schwartz, & Zach Cross
+</DIV>
+
+</BODY>
+</HTML>
