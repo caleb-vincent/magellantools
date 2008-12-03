@@ -215,8 +215,18 @@ elsif( param( 'page' ) eq 'Add Words')
             @temp = split( '\n',param( 'teacher-list' ) );
         }
         chomp(@temp);
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
-        show_teacher( );
+        my $pid = fork();
+		if ( $pid == 0 )
+		{
+			my @args = ( param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size, @temp );
+			exec ( "../../MagellanTools/parse_words.pl", @args) ;
+        }
+		elsif( $pid > 0 )
+		{
+			my $lecture = param( 'lecture-name' );
+			$err_msg = "Words are being added to lecture: $lecture, Foo\'";
+			show_teacher( );
+		}
     }
     elsif( param( 'teacherupload' ) && !param('teacher-list') && param( 'game-type' ) )
     {
@@ -227,8 +237,18 @@ elsif( param( 'page' ) eq 'Add Words')
         {
             $_ =~ s/^(.*)\r$/$1$2/g
         }
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
-        show_teacher( );
+		my $pid = fork();
+		if ( $pid == 0 )
+		{
+			my @args = ( param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size, @temp );
+			exec ( "../../MagellanTools/parse_words.pl", @args) ;
+        }
+		elsif( $pid > 0 )
+		{
+			my $lecture = param( 'lecture-name' );
+			$err_msg = "Words are being added to lecture: $lecture, Foo\'";
+			show_teacher( );
+		}
     }
     else
     {
@@ -301,38 +321,7 @@ sub close_session
 
 }
 
-# PARSE WORDS
-# Accepts array reference, lecture, username, gametype
-# Adds words to database
-sub parse_words
-{
-    # parse words
-    my @lines = @{$_[0]};
-    my $lecture = $_[1];
-    my $user = $_[2];
-    my $gametype = $_[3];
-    my $options = $_[4];
-    # add to database
-    my $query = "SELECT * FROM mag_".$user." WHERE lecture = '".$lecture."'";
-    my $dbh = db_connect( );
-    my $ret = $dbh->prepare( $query );
-    $ret->execute( );
-    my $count = $ret->rows;
-    for(my $i = 0; $i <= scalar( @lines ); $i++ )
-    {
-        # $lines[$i] =~ s#'##g; # this is commented out for beta because it slows down the add word process exponentially. We are currently looking for a workaround.
-        if($lines[$i] ne "")
-        {
-            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','".$options."','' )";
-            $ret = $dbh->prepare( $query );
-            $ret->execute();
-            $count++;
-        }
-    }
 
-    $err_msg = "Added ".($#lines+1)." words (unless the line was blank) to lecture: $lecture, Foo\'";
-    db_disconnect( $dbh );
-}
 
 # SHOW GAMES LIST
 # Accepts no input
