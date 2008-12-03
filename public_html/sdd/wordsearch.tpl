@@ -1,4 +1,4 @@
-﻿<html>
+<html>
 <head>
     <link REL = "stylesheet" TYPE = "text/css" href = "<TMPL_VAR NAME = "style">" />
     <title>Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture"></title>
