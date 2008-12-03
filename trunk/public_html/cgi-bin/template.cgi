@@ -197,16 +197,26 @@ elsif( param( 'page' ) eq 'Add Words')
     get_session( $session );
     print header( );
     my $search_size = param( 'word-options' );
-    if( !param( 'word-options' ) )
+    if( !param( 'word-options' ) || param( 'word_options' ) =~ m|\D|g )
     {
         $search_size = 25;
+    }
+    if( param( 'leture-name' ) =~ m/'/g )
+    {
+        $err_msg = "Invalid lecture name foo\'";
+        show_teacher( );
+    }
+    if( param( 'username' ) =~ m/'/g || param( 'game-type' ) =~ m/'/g )
+    {
+        $err_msg = "Don't try to beat my system Foo\', you can\'t win";
+        show_teacher();
     }
     if( param( 'game-type' ) eq "WOR" && ( $search_size < 9  || $search_size > 35 ) )
     {
         $err_msg = "Give a number between 9 and 35 foo\'";
         show_teacher( );
     }
-    elsif( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
+    elsif( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) eq "BIN" )
     {
         # there is no file being uploaded
         my @temp = split( '\r\n',param( 'teacher-list' ) );
@@ -548,6 +558,9 @@ sub validate_user
 
     # retrieve function arguments
     my $user = shift;
+    
+    $user =~ s#'##g;
+    
     my $password = shift;
 
     # get hash of password
@@ -585,6 +598,16 @@ sub add_user
     if( length( $username ) > 16 )
     {
         $err_msg = "Usernames can only be up to 16 characters long foo\'";
+        return 0;
+    }
+    if( $username =~ m|'| )
+    {
+        $err_msg = "Invalid character in username foo\'";
+        return 0;
+    }
+    if( $real_name =~ m|'| )
+    {
+        $err_msg = "Invalid character in real name foo\'";
         return 0;
     }
 
