@@ -185,6 +185,11 @@
                     selected_cells.splice( 0, selected_cells.length );
                     // reset selected_word
                     selected_word = 625;
+					completed_words++;
+					if( completed_words >= word_list.length )
+					{
+						alert( " You've Completed the Wordsearch!" );
+					}
                 }
                 
             }
