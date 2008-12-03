@@ -15,11 +15,11 @@ sub new
 {
     # the name of the class  ( wordsearch )
     my $class = shift;
-    
+    my $size = shift;
     # the array of characters for the word search
-    my @char_array = ( "\0" ) x 625;
+    my @char_array = ( "\0" ) x $size ** 2;
     # the array of word indexes for the word search
-    my @word_array = ( 625 ) x 625;
+    my @word_array = ( $size ** 2 ) x $size ** 2;
     #the array containing the length of each word index
     my @length_array;
     # the array containing all of the words in the word search
@@ -28,8 +28,9 @@ sub new
     @sub_array = ( \&add_vert_word, \&add_horz_word, \&add_left_diag_word, \&add_right_diag_word );
     
     # the object itself
-    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ], word_list=>[ @word_list ] };
-    bless $obj, $class;
+    my $obj ={ char_array=>[ @char_array ], word_array=>[ @word_array ], length_array=>[ @length_array ], word_list=>[ @word_list ], size=>$size };
+    
+	bless $obj, $class;
     return $obj;
 }
 
@@ -42,12 +43,13 @@ sub create_wordsearch
     #suffle the contents of the array
     @word_array = shuffle( @word_array );
     # maximum size of a word to be used
-    my $max_size = 25;
+    my $max_size = $self->{size};
+	#die "max size: $max_size\n";
     my $used_spaces = 0;
     my $tried_words = 0;
     
     # while the maximum word size is greater than 2, while the board is under 75% full, while there are still words left, and while we haven't failed in adding 50 woirds in a row
-    while ( $max_size > 2 && $used_spaces < ( 625 * .75 ) && $#word_array >= 0  )
+    while ( $max_size > 2 && $used_spaces < ( ( $self->{size} ** 2 ) * .75 ) && $#word_array >= 0  )
     {
         # since it's shuffled, we can always take of the 1st and remove it form the array
         my $curr_word = shift( @word_array );
@@ -84,10 +86,10 @@ sub create_wordsearch
     # make an array of letters
     my @letters = ( 'A' .. 'Z' );
     #for every letter in the word search
-    for( my $i = 0; $i <625; $i++ )
+    for( my $i = 0; $i < ( $self->{size} ** 2 ); $i++ )
     {
         # if it is unused
-        if( ${ $self->{word_array} }[$i] == 625 )
+        if( ${ $self->{word_array} }[$i] == ( $self->{size} ** 2 ) )
         {
             #fill it with a random letter
             
@@ -102,14 +104,14 @@ sub add_vert_word
     my $self = shift;
     my $word = shift;
     # pick a random row to start in
-    my $row_starter  = int( rand( 24 ) );
+    my $row_starter  = int( rand( $self->{size} - 1 ) );
     # increment up from that starter to the one before the starter 
     for ( my $i = $row_starter; $i < 25; $i+=2 )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 24 ) );
+        my $col_starter = int( rand( $self->{size} - 1 ) );
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j < 25; $j+=2 )
+        for( my $j = $col_starter; $j < $self->{size}; $j+=2 )
         {
             
             my $no_room = 0;
@@ -117,14 +119,14 @@ sub add_vert_word
             #increment forward from the position to see if there is enough room
             for( ; $offset < length( $word ); $offset++ )
             {
-                my $index = ( $i + $offset ) * 25 + $j;
+                my $index = ( $i + $offset ) * $self->{size} + $j;
                 # make sure we are not past the end
-                if( $index >= 625 )
+                if( $index >= ( $self->{size} ** 2 ) )
                 {
                     $no_room = 1;
                 }
                 # if it is otherwize ocupied or past the bottom
-                elsif( ${$self->get_word_array() }[ $index ] != 625 || ($offset + $i) >= 25 )
+                elsif( ${$self->get_word_array() }[ $index ] != ( $self->{size} ** 2 ) || ($offset + $i) >= $self->{size} )
                 {
                     $no_room = 1;
                 }
@@ -138,7 +140,7 @@ sub add_vert_word
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
                     
-                    my $index = ( $i + $offset ) * 25 + $j;
+                    my $index = ( $i + $offset ) * $self->{size} + $j;
                     # put the aproprite letter of the word in to the correct slot in the array
                     ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
                     # put the correct word index in the correct place
@@ -152,13 +154,13 @@ sub add_vert_word
                 
             }
             # loops our row index back to the begining
-            if( $j  == 26 )
+            if( $j  == $self->{size} + 1 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 26 )
+        if( $i  == $self->{size} + 1 )
         {
             $i = -1;
         }
@@ -171,14 +173,14 @@ sub add_horz_word
     my $self = shift;
     my $word = shift;
     # pick a random row to start in
-    my $row_starter = int( rand( 24 ) );#$rand;
+    my $row_starter = int( rand( $self->{size} - 1 ) );#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i < 25; $i++ )
+    for ( my $i = $row_starter; $i < $self->{size}; $i++ )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 24 ) );# $rand;
+        my $col_starter = int( rand( $self->{size} - 1 ) );# $rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j < 25; $j++ )
+        for( my $j = $col_starter; $j < $self->{size}; $j++ )
         {
             my $no_room = 0;
             my $offset = 0;
@@ -186,16 +188,16 @@ sub add_horz_word
             for( ; $offset < length( $word ) ; $offset++ )
             {
                 
-                my $index = ( $i ) * 25 + ( $j + $offset );
+                my $index = ( $i ) * $self->{size} + ( $j + $offset );
                 # if we're off the array
-                if( $index >= 625 )
+                if( $index >= ( $self->{size} ** 2 ) )
                 {
                     #fail
                     $no_room = 1;
                     last;
                 }
                 # if the space is ocupied or invalid
-                if( ${ $self->{word_array} }[ $index ] != 625 || ($offset + $j) >= 25 )
+                if( ${ $self->{word_array} }[ $index ] != ( $self->{size} ** 2 ) || ($offset + $j) >= $self->{size} )
                 {
                     #fail
                     $no_room = 1;
@@ -209,7 +211,7 @@ sub add_horz_word
                 push( @{ $self->get_length_array() }, length( $word ) );
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
-                    my $index = ( $i  * 25 ) + $j + $offset;
+                    my $index = ( $i  * $self->{size} ) + $j + $offset;
                     # put the aproprite letter of the word in to the correct slot in the array
                     ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
                     # put the correct word index in the correct place
@@ -222,13 +224,13 @@ sub add_horz_word
                
             }
             # loops our row index back to the begining
-            if( $j  == 26 )
+            if( $j  == $self->{size} + 1 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 26 )
+        if( $i  == $self->{size} + 1 )
         {
             $i = -1;
         }
@@ -241,14 +243,14 @@ sub add_left_diag_word
     my $self = shift;
     my $word = shift;
     # pick a random row to start in
-    my $row_starter = int( rand( 24 ) );#$rand;
+    my $row_starter = int( rand( $self->{size} - 1 ) );#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i < 25; $i++ )
+    for ( my $i = $row_starter; $i < $self->{size}; $i++ )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 24 ) );# $rand;
+        my $col_starter = int( rand( $self->{size} - 1 ) );# $rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j < 25; $j++ )
+        for( my $j = $col_starter; $j < $self->{size}; $j++ )
         {
             my $no_room = 0;
             my $offset = 0;
@@ -256,16 +258,16 @@ sub add_left_diag_word
             for( ; $offset < length( $word ) ; $offset++ )
             {
                 
-                my $index = ( ( $i + $offset ) * 25 ) + ( $j - $offset );
+                my $index = ( ( $i + $offset ) * $self->{size} ) + ( $j - $offset );
                 # if we're off the array
-                if( $index >= 625 )
+                if( $index >= $self->{size} ** 2 )
                 {
                     #fail
                     $no_room = 1;
                     last;
                 }
                 # if the space is ocupied or invalid
-                if( ${ $self->{word_array} }[ $index ] != 625 || ( $j - $offset ) < 0 )
+                if( ${ $self->{word_array} }[ $index ] != ( $self->{size} ** 2 ) || ( $j - $offset ) < 0 )
                 {
                     #fail
                     $no_room = 1;
@@ -279,7 +281,7 @@ sub add_left_diag_word
                 push( @{ $self->get_length_array() }, length( $word ) );
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
-                    my $index = ( ( $i + $offset )  * 25 ) + $j - $offset;
+                    my $index = ( ( $i + $offset )  * $self->{size} ) + $j - $offset;
                     # put the aproprite letter of the word in to the correct slot in the array
                     ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
                     # put the correct word index in the correct place
@@ -292,13 +294,13 @@ sub add_left_diag_word
                
             }
             # loops our row index back to the begining
-            if( $j  == 26 )
+            if( $j  == $self->{size} + 1 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 26 )
+        if( $i  == $self->{size} + 1 )
         {
             $i = -1;
         }
@@ -311,14 +313,14 @@ sub add_right_diag_word
     my $self = shift;
     my $word = shift;
     # pick a random row to start in
-    my $row_starter = int( rand( 24 ) );#$rand;
+    my $row_starter = int( rand( $self->{size} - 1 ) );#$rand;
     # increment up from that starter to the one before the starter 
-    for ( my $i = $row_starter; $i < 25; $i++ )
+    for ( my $i = $row_starter; $i < $self->{size}; $i++ )
     {
         # pick a random colomn
-        my $col_starter = int( rand( 24 ) );# $rand;
+        my $col_starter = int( rand( $self->{size} - 1 ) );# $rand;
         # increment up from that starter to the one before the starter 
-        for( my $j = $col_starter; $j < 25; $j++ )
+        for( my $j = $col_starter; $j < $self->{size}; $j++ )
         {
             my $no_room = 0;
             my $offset = 0;
@@ -326,16 +328,16 @@ sub add_right_diag_word
             for( ; $offset < length( $word ) ; $offset++ )
             {
                 
-                my $index = ( ( $i + $offset ) * 25 ) + ( $j + $offset );
+                my $index = ( ( $i + $offset ) * $self->{size} ) + ( $j + $offset );
                 # if we're off the array
-                if( $index >= 625 )
+                if( $index >= ( $self->{size} ** 2 ) )
                 {
                     #fail
                     $no_room = 1;
                     last;
                 }
                 # if the space is ocupied or invalid
-                if( ${ $self->{word_array} }[ $index ] != 625 || ($offset + $j) >= 25 )
+                if( ${ $self->{word_array} }[ $index ] != ( $self->{size} ** 2 ) || ($offset + $j) >= $self->{size} )
                 {
                     #fail
                     $no_room = 1;
@@ -349,7 +351,7 @@ sub add_right_diag_word
                 push( @{ $self->get_length_array() }, length( $word ) );
                 for( my $offset = 0; $offset < length( $word ); $offset++ )
                 {
-                    my $index = ( ( $i + $offset )  * 25 ) + $j + $offset;
+                    my $index = ( ( $i + $offset )  * $self->{size} ) + $j + $offset;
                     # put the aproprite letter of the word in to the correct slot in the array
                     ${ $self->{char_array} }[ $index ] = substr( $word, $offset, 1 );
                     # put the correct word index in the correct place
@@ -362,13 +364,13 @@ sub add_right_diag_word
                
             }
             # loops our row index back to the begining
-            if( $j  == 26 )
+            if( $j  == $self->{size} + 1 )
             {
                 $j = -1;
             }
         }
         # loops our row index back to the begining
-        if( $i  == 26 )
+        if( $i  == $self->{size} + 1 )
         {
             $i = -1;
         }
