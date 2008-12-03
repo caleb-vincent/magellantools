@@ -593,9 +593,9 @@ sub add_user
     my $username = shift;
     my $password = shift;
     my $real_name = shift;
-    if( length( $username ) > 8 )
+    if( length( $username ) > 16 )
     {
-        $err_msg = "Usernames can only be 8 characters long foo\'";
+        $err_msg = "Usernames can only be up to 16 characters long foo\'";
         return 0;
     }
 
