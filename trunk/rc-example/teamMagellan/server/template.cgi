@@ -197,16 +197,26 @@ elsif( param( 'page' ) eq 'Add Words')
     get_session( $session );
     print header( );
     my $search_size = param( 'word-options' );
-    if( !param( 'word-options' ) )
+    if( !param( 'word-options' ) || param( 'word_options' ) =~ m|\D|g )
     {
         $search_size = 25;
+    }
+    if( param( 'leture-name' ) =~ m/'/g )
+    {
+        $err_msg = "Invalid lecture name foo\'";
+        show_teacher( );
+    }
+    if( param( 'username' ) =~ m/'/g || param( 'game-type' ) =~ m/'/g )
+    {
+        $err_msg = "Don't try to beat my system Foo\', you can\'t win";
+        show_teacher();
     }
     if( param( 'game-type' ) eq "WOR" && ( $search_size < 9  || $search_size > 35 ) )
     {
         $err_msg = "Give a number between 9 and 35 foo\'";
         show_teacher( );
     }
-    elsif( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) )
+    elsif( !param( 'teacherupload' )  && param( 'teacher-list' ) && param( 'game-type' ) eq "BIN" )
     {
         # there is no file being uploaded
         my @temp = split( '\r\n',param( 'teacher-list' ) );
@@ -215,8 +225,18 @@ elsif( param( 'page' ) eq 'Add Words')
             @temp = split( '\n',param( 'teacher-list' ) );
         }
         chomp(@temp);
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
-        show_teacher( );
+        my $pid = fork();
+		if ( $pid == 0 )
+		{
+			my @args = ( param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size, @temp );
+			exec ( "../../MagellanTools/parse_words.pl", @args) ;
+        }
+		elsif( $pid > 0 )
+		{
+			my $lecture = param( 'lecture-name' );
+			$err_msg = "Words are being added to lecture: $lecture, Foo\'";
+			show_teacher( );
+		}
     }
     elsif( param( 'teacherupload' ) && !param('teacher-list') && param( 'game-type' ) )
     {
@@ -227,8 +247,18 @@ elsif( param( 'page' ) eq 'Add Words')
         {
             $_ =~ s/^(.*)\r$/$1$2/g
         }
-        parse_words( \@temp, param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size );
-        show_teacher( );
+		my $pid = fork();
+		if ( $pid == 0 )
+		{
+			my @args = ( param( 'lecture-name' ), $session->param('username'), param( 'game-type' ), $search_size, @temp );
+			exec ( "../../MagellanTools/parse_words.pl", @args) ;
+        }
+		elsif( $pid > 0 )
+		{
+			my $lecture = param( 'lecture-name' );
+			$err_msg = "Words are being added to lecture: $lecture, Foo\'";
+			show_teacher( );
+		}
     }
     else
     {
@@ -301,38 +331,7 @@ sub close_session
 
 }
 
-# PARSE WORDS
-# Accepts array reference, lecture, username, gametype
-# Adds words to database
-sub parse_words
-{
-    # parse words
-    my @lines = @{$_[0]};
-    my $lecture = $_[1];
-    my $user = $_[2];
-    my $gametype = $_[3];
-    my $options = $_[4];
-    # add to database
-    my $query = "SELECT * FROM mag_".$user." WHERE lecture = '".$lecture."'";
-    my $dbh = db_connect( );
-    my $ret = $dbh->prepare( $query );
-    $ret->execute( );
-    my $count = $ret->rows;
-    for(my $i = 0; $i <= scalar( @lines ); $i++ )
-    {
-        # $lines[$i] =~ s#'##g; # this is commented out for beta because it slows down the add word process exponentially. We are currently looking for a workaround.
-        if($lines[$i] ne "")
-        {
-            $query = "INSERT INTO mag_".$user." VALUES( '".$gametype."','".$lecture."','".$lines[$i]."','".$count."','template.cgi?lecture=$lecture&user=$user&page=$gametype','".$options."','' )";
-            $ret = $dbh->prepare( $query );
-            $ret->execute();
-            $count++;
-        }
-    }
 
-    $err_msg = "Added ".($#lines+1)." words (unless the line was blank) to lecture: $lecture, Foo\'";
-    db_disconnect( $dbh );
-}
 
 # SHOW GAMES LIST
 # Accepts no input
@@ -469,7 +468,7 @@ sub show_wordsearch
     my $user = param( 'user' );
     my $lecture = param( 'lecture' );
     # Put games into array reference
-    my @curgames = @{ $dbh->selectall_arrayref( "SELECT word FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'WOR'" ) };
+    my @curgames = @{ $dbh->selectall_arrayref( "SELECT word, options FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'WOR'" ) };
     my @dumb_words;
     foreach my $row ( @curgames  )
     {
@@ -477,9 +476,9 @@ sub show_wordsearch
     }
     # Close DB connection
     db_disconnect( $dbh );
-
+	
     #create a new word search object
-    my $wordsearch_object = Wordsearch->new();
+    my $wordsearch_object = Wordsearch->new( ${ $curgames[0] }[1] );
     # initialize and fill it.
     $wordsearch_object->create_wordsearch( @dumb_words );
     # prepare the wordsearch to be sent to ethe template
@@ -494,11 +493,11 @@ sub show_wordsearch
     #this is where a temporary copy of the page is stored for printing
     my $file_name = "$user-$lecture-$time_stamp.html";
     #parse the tamplate, and insert correct values
-    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name", size=>${ $curgames[0] }[1] );
     print $wordsearch->output( );
     # after it has been sent to the user ( don't waste the users time)
     # create the template again, but with the "print" template used
-    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true" );
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true", size=>${ $curgames[0] }[1] );
     #make a directory for the temp files (unless it exists)
     mkdir '../sdd/temp';
     #open the filename in the temp directory for writingto
@@ -559,6 +558,9 @@ sub validate_user
 
     # retrieve function arguments
     my $user = shift;
+    
+    $user =~ s#'##g;
+    
     my $password = shift;
 
     # get hash of password
@@ -596,6 +598,16 @@ sub add_user
     if( length( $username ) > 16 )
     {
         $err_msg = "Usernames can only be up to 16 characters long foo\'";
+        return 0;
+    }
+    if( $username =~ m|'| )
+    {
+        $err_msg = "Invalid character in username foo\'";
+        return 0;
+    }
+    if( $real_name =~ m|'| )
+    {
+        $err_msg = "Invalid character in real name foo\'";
         return 0;
     }
 
