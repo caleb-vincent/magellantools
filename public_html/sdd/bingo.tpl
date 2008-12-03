@@ -21,7 +21,16 @@
                 <INPUT TYPE = "button" VALUE="Print" onClick="window.open('<TMPL_VAR NAME = "file">', 'Word Search: <TMPL_VAR NAME = "teacher">: <TMPL_VAR NAME = "lecture">', 'WIDTH=800, HEIGHT=600,COPYHISTORY=no,MENUBAR=no,STATUS=no,DIRECTORIES=no,LOCATION=no,TOOLBAR=no')" />
             </FORM>        
         </TMPL_IF>
-    </DIV> 
+    </DIV>
+	<DIV>
+		<SELECT NAME="win type" ID="WinSel" >
+			<OPTION ID="row" > Four-In-A-Row </OPTION>
+			<OPTION ID="fullcard" > Cover-All </OPTION>
+			<OPTION ID="outline" > Around-The-Edges </OPTION>
+			<OPTION ID="fourcorner" > Four-Corners </OPTION>
+		</SELECT>
+
+	</DIV>
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
 
@@ -53,6 +62,7 @@
             // creates an HTML <table> element
             var table = document.createElement("table");
             tblBody = document.createElement("tbody");
+			tblBody.setAttribute( "ID", "table" );
             table.setAttribute("border", "2");
             table.setAttribute("width", boxwidth*numcols)
              table.setAttribute( "bgcolor", "#EEEEFF" );
@@ -64,6 +74,7 @@
                 var row = document.createElement("tr");
                 row.setAttribute("width", boxwidth);
                 row.setAttribute("align", "center");
+				row.setAttribute( "id", i );
 
                 for (var j=0;j<numcols;j++) 
                 {
@@ -105,7 +116,33 @@
             }
             table.appendChild(tblBody);
             body.appendChild(table);
+			
+			//setup the frop down list
+			var list = document.getElementById( "WinSel" );
+			list.setAttribute( "onchange", "LChange( this, tblBody );" );
+			
         }
+		
+		function LChange( list, tblBody )
+		{
+			// grab the badoy of the document
+			var body = document.getElementById( "bingo-board");
+			var child;
+			
+			// remove everything javascript added to it
+			while( child = body.firstChild )
+			{
+				body.removeChild( child );
+			}
+			
+			// run start again
+			start();
+			
+			// reset the win condition to the right thing
+			var myindex  = list.selectedIndex
+			var SelID = list.options[myindex].getAttribute( "ID" )
+			wincondition = SelID;
+		}
 
         // Get the word inside a given cell
         function GetCellText(cell)
