@@ -469,7 +469,7 @@ sub show_wordsearch
     my $user = param( 'user' );
     my $lecture = param( 'lecture' );
     # Put games into array reference
-    my @curgames = @{ $dbh->selectall_arrayref( "SELECT word FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'WOR'" ) };
+    my @curgames = @{ $dbh->selectall_arrayref( "SELECT word, options FROM mag_$user WHERE lecture = '$lecture' AND game_type = 'WOR'" ) };
     my @dumb_words;
     foreach my $row ( @curgames  )
     {
@@ -477,9 +477,9 @@ sub show_wordsearch
     }
     # Close DB connection
     db_disconnect( $dbh );
-
+	
     #create a new word search object
-    my $wordsearch_object = Wordsearch->new();
+    my $wordsearch_object = Wordsearch->new( ${ $curgames[0] }[1] );
     # initialize and fill it.
     $wordsearch_object->create_wordsearch( @dumb_words );
     # prepare the wordsearch to be sent to ethe template
@@ -494,11 +494,11 @@ sub show_wordsearch
     #this is where a temporary copy of the page is stored for printing
     my $file_name = "$user-$lecture-$time_stamp.html";
     #parse the tamplate, and insert correct values
-    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name" );
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>$login_style, word_list=>$word_list, file=>"../sdd/temp/$file_name", size=>${ $curgames[0] }[1] );
     print $wordsearch->output( );
     # after it has been sent to the user ( don't waste the users time)
     # create the template again, but with the "print" template used
-    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true" );
+    $wordsearch->param( teacher=>$user, lecture=>$lecture, char_array=>$flattened_chars, word_array=>$flattened_words, length_array=>$flattened_lengths, style=>"../$login_style", word_list=>$word_list, print=>"true", size=>${ $curgames[0] }[1] );
     #make a directory for the temp files (unless it exists)
     mkdir '../sdd/temp';
     #open the filename in the temp directory for writingto
