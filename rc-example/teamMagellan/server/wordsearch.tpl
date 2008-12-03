@@ -30,8 +30,8 @@
     <script type="text/javascript">
         // This is the javascript file that contains the playable bingo game. 
 
-        var numrows = 25;
-        var numcols = 25;
+        var numrows = <TMPL_VAR NAME = "size">;
+        var numcols = <TMPL_VAR NAME = "size">;
         var boxheight = 25;
         var boxwidth = 25;
         // initializes an array called char_array that contains each element a char
@@ -44,7 +44,7 @@
         var word_list = [ "<TMPL_VAR NAME = "word_list">" ];
         var tblBody;
         // for the index of the the word being selected, cannot under any circumstances be 625 words. ever.
-        var selected_word = 625;
+        var selected_word = numrows * numcols;
         // will contain the cells that have been selected
         var selected_cells = [];
         var completed_words = 0;
@@ -146,7 +146,7 @@
                 ClearSelected();
             }
             // start new word selection
-            else if( cell.getAttribute( "NAME" ) == 625 || cell.getAttribute( "NAME") != selected_word )
+            else if( cell.getAttribute( "NAME" ) == numrows * numcols || cell.getAttribute( "NAME") != selected_word )
             {
                 // clear
                 ClearSelected();
@@ -184,7 +184,7 @@
                     // clear the selected array
                     selected_cells.splice( 0, selected_cells.length );
                     // reset selected_word
-                    selected_word = 625;
+                    selected_word = numrows * numcols;
 					completed_words++;
 					if( completed_words >= word_list.length )
 					{
