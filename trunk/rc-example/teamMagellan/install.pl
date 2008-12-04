@@ -85,6 +85,7 @@ print "Setting permissions...\n\n";
 #set permissions
 system 'chmod 0755 ../cgi-bin/template.cgi';
 system 'chmod 0664 ../cgi-bin/wordsearch.pm';
+system 'chmod u+x ../../MagellanTools/parse_words.pl';
 
 print "Please enter the username you have created for this application's database access: ";
 chomp( my $name = <STDIN> );
