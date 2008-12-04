@@ -371,7 +371,7 @@ sub show_search_results
     $search_term =~ s#'##g;
     my $dbh = db_connect( );
     # Get the tables for the current teacher
-    my $query = "SELECT user_name FROM mag_Login WHERE UPPER(user_name) LIKE UPPER('%$search_term%')";
+    my $query = "SELECT DISTINCT user_name FROM mag_Login WHERE (UPPER(user_name) LIKE UPPER('%$search_term%') OR UPPER(real_name) LIKE UPPER('%$search_term%'))";
     my $result = $dbh->prepare( $query );
     $result->execute( );
     my @names;
