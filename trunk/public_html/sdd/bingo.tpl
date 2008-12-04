@@ -24,7 +24,7 @@
     </DIV>
 	<DIV>
 		<SELECT NAME="win type" ID="WinSel" >
-			<OPTION ID="row" > Four-In-A-Row </OPTION>
+			<OPTION ID="row" > Five-In-A-Row </OPTION>
 			<OPTION ID="fullcard" > Cover-All </OPTION>
 			<OPTION ID="outline" > Around-The-Edges </OPTION>
 			<OPTION ID="fourcorner" > Four-Corners </OPTION>
