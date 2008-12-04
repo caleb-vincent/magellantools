@@ -121,55 +121,52 @@
             
         }
         
-        // goes through the selected cells, and resets there attributes 
-        function ClearSelected()
-        {
-            // for every selected cell
-            for( var i = 0; i < selected_cells.length; i++ )
-            {
-                // the reseting
-                selected_cells[i].setAttribute("bgcolor", "#EEEEFF");
-                selected_cells[i].setAttribute("onmouseover", "this.bgColor='#DDDDFF'");
-                selected_cells[i].setAttribute("onmouseout", "this.bgColor='#EEEEFF'");
-            }
-            // trash everything in the array
-            selected_cells.splice( 0, selected_cells.length );
-        }
-        
         // Callback for cell mouse click
         function MClick(cell, tblBody)
         {
             //if it doesn't have "onmouseover" attribute, it has already been selected before
-            if( !cell.getAttribute( "onmouseover" ) )
+            if( cell.getAttribute( "ID" ) == "selected" )
             {
-                // so it must be a new word, clear selected array
-                ClearSelected();
-            }
-            // start new word selection
-            else if( cell.getAttribute( "NAME" ) == numrows * numcols || cell.getAttribute( "NAME") != selected_word )
-            {
-                // clear
-                ClearSelected();
-                // set the selected_word
-                selected_word = cell.getAttribute( "NAME" );
-                // set the cells attributes
-                cell.setAttribute("bgcolor", "33FFFF");
-                cell.removeAttribute("onmouseover");
-                cell.removeAttribute("onmouseout");
-                //add it to the selected array
-                selected_cells.push( cell );
+				var index = selected_cells.indexOf( cell );
+				if (index != -1 )
+				{
+					selected_cells.splice( index, 1 );
+				}
+                cell.setAttribute("bgcolor", "#EEEEFF");
+                cell.setAttribute("onmouseover", "this.bgColor='#DDDDFF'");
+                cell.setAttribute("onmouseout", "this.bgColor='#EEEEFF'");
+				cell.setAttribute( "ID", "" );
             }
             // if its part of the current word
-            else if ( cell.getAttribute( "NAME") == selected_word )
+            else if ( cell.getAttribute( "ID" ) != "done" )
             {
+				selected_word = cell.getAttribute( "name" );
                 // set its attributes
                 cell.setAttribute("bgcolor", "33FFFF");
                 cell.removeAttribute("onmouseover");
                 cell.removeAttribute("onmouseout");
+				cell.setAttribute( "ID", "selected" );
                 // add it
                 selected_cells.push( cell );
                 // if it was the last of its word index
-                if( selected_cells.length == length_array[ selected_word ] )
+            }
+			checkWin();
+			
+        }
+		
+		function checkWin ()
+		{
+			if( selected_word < numrows * numcols )
+			{
+				var isOneWord = true;
+				for( var q = 1; q < selected_cells.length; q++ )
+				{
+					if( selected_cells[q - 1].getAttribute( "NAME" ) != selected_cells[q].getAttribute( "NAME" ) )
+					{
+						isOneWord = false;
+					}
+				}
+                if( isOneWord == true && selected_cells.length == length_array[selected_word] )
                 {
                     // color them all done
                     for( var i = 0; i < selected_cells.length; i++ )
@@ -178,6 +175,7 @@
                         selected_cells[i].setAttribute("bgcolor", color );
                         selected_cells[i].removeAttribute("onmouseover");
                         selected_cells[i].removeAttribute("onmouseout");
+						selected_cells[i].setAttribute( "ID", "done" );
                     }
                     // set the coresponding word list word to strike out
                     document.getElementById( selected_word ).setAttribute( "CLASS", "found-word" );
@@ -191,10 +189,8 @@
 						alert( " You've Completed the Wordsearch!" );
 					}
                 }
-                
-            }
-            
-        }
+			}
+		}
 
     </script>
     
