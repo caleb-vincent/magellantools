@@ -41,6 +41,7 @@
         var boxheight = 50
         var boxwidth = 50
         var bingo = "BINGO"
+        var clickedColor = "33FFFF"
         var wincondition = "row"
         var tblBody
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
@@ -162,11 +163,11 @@
         {
             if(cell.getAttribute("bgcolor", "white"))
             {
-                cell.setAttribute("bgcolor", "red");
+                cell.setAttribute("bgcolor", clickedColor);
                 cell.removeAttribute("onmouseover");
                 cell.removeAttribute("onmouseout");
             }
-            else if(cell.getAttribute("bgcolor", "red"))
+            else if(cell.getAttribute("bgcolor", clickedColor))
             {
                 cell.setAttribute("bgcolor", "white");
                 cell.setAttribute("onmouseover", "this.bgColor='blue'");
@@ -192,7 +193,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(j);
-                        if(cell.getAttribute("bgcolor") != "red")
+                        if(cell.getAttribute("bgcolor") != clickedColor)
                         {
                            win = false; 
                         }
