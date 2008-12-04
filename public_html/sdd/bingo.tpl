@@ -41,7 +41,6 @@
         var boxheight = 50
         var boxwidth = 50
         var bingo = "BINGO"
-        var clickedColor = "33FFFF"
         var wincondition = "row"
         var tblBody
         // This should be an array of at least numrows * numcols - 1 words (one is free space)
@@ -92,7 +91,7 @@
                     else
                     {
                         cell.setAttribute("name", "FREE");
-                        cell.setAttribute("bgcolor", clickedColor);                
+                        cell.setAttribute("bgcolor", "red");                
                     }
                     if(i != 0 && !(i == freeSpace[0] && j == freeSpace[1]-1))
                     {
@@ -163,11 +162,11 @@
         {
             if(cell.getAttribute("bgcolor", "white"))
             {
-                cell.setAttribute("bgcolor", clickedColor);
+                cell.setAttribute("bgcolor", "red");
                 cell.removeAttribute("onmouseover");
                 cell.removeAttribute("onmouseout");
             }
-            else if(cell.getAttribute("bgcolor", clickedColor))
+            else if(cell.getAttribute("bgcolor", "red"))
             {
                 cell.setAttribute("bgcolor", "white");
                 cell.setAttribute("onmouseover", "this.bgColor='blue'");
@@ -193,7 +192,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(j);
-                        if(cell.getAttribute("bgcolor") != clickedColor)
+                        if(cell.getAttribute("bgcolor") != "red")
                         {
                            win = false; 
                         }
@@ -209,7 +208,7 @@
                     row2 = tblBody.childNodes.item(numcols);
                     cell = row.childNodes.item(i);
                     cell2 = row2.childNodes.item(i);
-                    if(cell.getAttribute("bgcolor") != clickedColor || cell2.getAttribute("bgcolor") != clickedColor)
+                    if(cell.getAttribute("bgcolor") != "red" || cell2.getAttribute("bgcolor") != "red")
                     {
                        win = false; 
                     }    
@@ -221,7 +220,7 @@
                     row = tblBody.childNodes.item(i);
                     cell = row.childNodes.item(0);
                     cell2 = row.childNodes.item(numrows-1);
-                    if(cell.getAttribute("bgcolor") != clickedColor || cell2.getAttribute("bgcolor") != clickedColor)
+                    if(cell.getAttribute("bgcolor") != "red" || cell2.getAttribute("bgcolor") != "red")
                     {
                        win = false; 
                     }     
@@ -230,10 +229,10 @@
             else if(condition == "fourcorner")
             {
                 // Check each corner (explicitly)
-                if(tblBody.childNodes.item(1).childNodes.item(0).getAttribute("bgcolor") != clickedColor 
-                || tblBody.childNodes.item(1).childNodes.item(numrows-1).getAttribute("bgcolor") != clickedColor
-                || tblBody.childNodes.item(numcols).childNodes.item(0).getAttribute("bgcolor") != clickedColor
-                || tblBody.childNodes.item(numcols).childNodes.item(numrows-1).getAttribute("bgcolor") != clickedColor)
+                if(tblBody.childNodes.item(1).childNodes.item(0).getAttribute("bgcolor") != "red" 
+                || tblBody.childNodes.item(1).childNodes.item(numrows-1).getAttribute("bgcolor") != "red"
+                || tblBody.childNodes.item(numcols).childNodes.item(0).getAttribute("bgcolor") != "red"
+                || tblBody.childNodes.item(numcols).childNodes.item(numrows-1).getAttribute("bgcolor") != "red")
                 {
                    win = false; 
                 }      
@@ -252,7 +251,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(j);
-                        if(cell.getAttribute("bgcolor") != clickedColor)
+                        if(cell.getAttribute("bgcolor") != "red")
                         {
                            win = false; 
                         }
@@ -273,7 +272,7 @@
                         {
                             row = tblBody.childNodes.item(j);
                             cell = row.childNodes.item(i);
-                            if(cell.getAttribute("bgcolor") != clickedColor)
+                            if(cell.getAttribute("bgcolor") != "red")
                             {
                                win = false; 
                             }
@@ -293,7 +292,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(i-1);
-                        if(cell.getAttribute("bgcolor") != clickedColor)
+                        if(cell.getAttribute("bgcolor") != "red")
                         {
                            win = false; 
                         }
@@ -305,7 +304,7 @@
                         {
                             row = tblBody.childNodes.item(i);
                             cell = row.childNodes.item(numcols-i);
-                            if(cell.getAttribute("bgcolor") != clickedColor)
+                            if(cell.getAttribute("bgcolor") != "red")
                             {
                                win = false; 
                             }
