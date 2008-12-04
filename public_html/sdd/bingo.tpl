@@ -92,7 +92,7 @@
                     else
                     {
                         cell.setAttribute("name", "FREE");
-                        cell.setAttribute("bgcolor", "red");                
+                        cell.setAttribute("bgcolor", clickedColor);                
                     }
                     if(i != 0 && !(i == freeSpace[0] && j == freeSpace[1]-1))
                     {
@@ -209,7 +209,7 @@
                     row2 = tblBody.childNodes.item(numcols);
                     cell = row.childNodes.item(i);
                     cell2 = row2.childNodes.item(i);
-                    if(cell.getAttribute("bgcolor") != "red" || cell2.getAttribute("bgcolor") != "red")
+                    if(cell.getAttribute("bgcolor") != clickedColor || cell2.getAttribute("bgcolor") != clickedColor)
                     {
                        win = false; 
                     }    
@@ -221,7 +221,7 @@
                     row = tblBody.childNodes.item(i);
                     cell = row.childNodes.item(0);
                     cell2 = row.childNodes.item(numrows-1);
-                    if(cell.getAttribute("bgcolor") != "red" || cell2.getAttribute("bgcolor") != "red")
+                    if(cell.getAttribute("bgcolor") != clickedColor || cell2.getAttribute("bgcolor") != clickedColor)
                     {
                        win = false; 
                     }     
@@ -230,10 +230,10 @@
             else if(condition == "fourcorner")
             {
                 // Check each corner (explicitly)
-                if(tblBody.childNodes.item(1).childNodes.item(0).getAttribute("bgcolor") != "red" 
-                || tblBody.childNodes.item(1).childNodes.item(numrows-1).getAttribute("bgcolor") != "red"
-                || tblBody.childNodes.item(numcols).childNodes.item(0).getAttribute("bgcolor") != "red"
-                || tblBody.childNodes.item(numcols).childNodes.item(numrows-1).getAttribute("bgcolor") != "red")
+                if(tblBody.childNodes.item(1).childNodes.item(0).getAttribute("bgcolor") != clickedColor 
+                || tblBody.childNodes.item(1).childNodes.item(numrows-1).getAttribute("bgcolor") != clickedColor
+                || tblBody.childNodes.item(numcols).childNodes.item(0).getAttribute("bgcolor") != clickedColor
+                || tblBody.childNodes.item(numcols).childNodes.item(numrows-1).getAttribute("bgcolor") != clickedColor)
                 {
                    win = false; 
                 }      
@@ -252,7 +252,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(j);
-                        if(cell.getAttribute("bgcolor") != "red")
+                        if(cell.getAttribute("bgcolor") != clickedColor)
                         {
                            win = false; 
                         }
@@ -273,7 +273,7 @@
                         {
                             row = tblBody.childNodes.item(j);
                             cell = row.childNodes.item(i);
-                            if(cell.getAttribute("bgcolor") != "red")
+                            if(cell.getAttribute("bgcolor") != clickedColor)
                             {
                                win = false; 
                             }
@@ -293,7 +293,7 @@
                     {
                         row = tblBody.childNodes.item(i);
                         cell = row.childNodes.item(i-1);
-                        if(cell.getAttribute("bgcolor") != "red")
+                        if(cell.getAttribute("bgcolor") != clickedColor)
                         {
                            win = false; 
                         }
@@ -305,7 +305,7 @@
                         {
                             row = tblBody.childNodes.item(i);
                             cell = row.childNodes.item(numcols-i);
-                            if(cell.getAttribute("bgcolor") != "red")
+                            if(cell.getAttribute("bgcolor") != clickedColor)
                             {
                                win = false; 
                             }
